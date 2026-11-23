@@ -1,0 +1,2801 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>從人工智慧到生成式 AI：研究所計算機概論核心知識</title>
+<meta name="description" content="研究所計算機概論 AI 雙語知識庫教學簡報，涵蓋傳統機器學習、深度學習、強化學習、Transformer 與生成式 AI，適合中正、中山、雲科大資管所考試準備。">
+<meta name="keywords" content="機器學習,深度學習,Transformer,強化學習,LLM,研究所,計算機概論,資管所">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+    svg: { fontCache: 'global' }
+  };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" defer></script>
+<style>
+/* ===== CSS Reset & Base ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg-primary: #0d1117;
+  --bg-secondary: #161b22;
+  --bg-card: #21262d;
+  --bg-hover: #30363d;
+  --accent-blue: #58a6ff;
+  --accent-green: #3fb950;
+  --accent-orange: #f0883e;
+  --accent-purple: #bc8cff;
+  --accent-cyan: #39d353;
+  --accent-red: #f85149;
+  --text-primary: #e6edf3;
+  --text-secondary: #8b949e;
+  --text-muted: #6e7681;
+  --border: #30363d;
+  --slide-width: 900px;
+  --slide-height: 560px;
+  --font-main: 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+}
+
+html, body {
+  height: 100%;
+  font-family: var(--font-main);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  overflow: hidden;
+}
+
+/* ===== Layout ===== */
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+}
+
+/* ===== Top Bar ===== */
+#topbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 44px;
+  background: rgba(13,17,23,0.95);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  z-index: 100;
+  backdrop-filter: blur(10px);
+}
+
+#topbar .title-short {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+#topbar .controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.lang-btn {
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: var(--font-main);
+}
+.lang-btn.active {
+  background: var(--accent-blue);
+  border-color: var(--accent-blue);
+  color: #fff;
+}
+.lang-btn:hover:not(.active) {
+  border-color: var(--accent-blue);
+  color: var(--accent-blue);
+}
+
+#page-counter {
+  font-size: 12px;
+  color: var(--text-muted);
+  min-width: 70px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ===== Slide Container ===== */
+#slide-viewport {
+  margin-top: 44px;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  width: 100%;
+}
+
+#slide-wrapper {
+  position: relative;
+  width: var(--slide-width);
+  height: var(--slide-height);
+}
+
+.slide {
+  display: none;
+  position: absolute;
+  inset: 0;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  animation: slideIn 0.3s ease;
+}
+.slide.active { display: flex; flex-direction: column; }
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== Slide Header ===== */
+.slide-header {
+  padding: 24px 36px 16px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-secondary) 100%);
+  flex-shrink: 0;
+}
+
+.slide-chapter {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent-blue);
+  margin-bottom: 6px;
+}
+
+.slide-title-zh {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+.slide-title-en {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+  font-style: italic;
+}
+
+/* ===== Slide Body ===== */
+.slide-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 36px 16px;
+  display: flex;
+  gap: 24px;
+}
+.slide-body::-webkit-scrollbar { width: 4px; }
+.slide-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+.col { flex: 1; min-width: 0; }
+.col-wide { flex: 1.4; }
+.col-narrow { flex: 0.8; }
+
+/* ===== Typography in slides ===== */
+.slide-body h3 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent-blue);
+  margin-bottom: 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid rgba(88,166,255,0.2);
+  letter-spacing: 0.03em;
+}
+.slide-body p {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+}
+.slide-body ul, .slide-body ol {
+  padding-left: 16px;
+  margin-bottom: 10px;
+}
+.slide-body li {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+.slide-body strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* ===== Code blocks ===== */
+.code-block {
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: #79c0ff;
+  margin: 8px 0;
+  overflow-x: auto;
+  line-height: 1.6;
+}
+.code-block .hl { color: #f0883e; }
+.code-block .kw { color: #ff7b72; }
+.code-block .cm { color: var(--text-muted); font-style: italic; }
+
+/* ===== Formula blocks ===== */
+.formula-block {
+  background: rgba(88,166,255,0.06);
+  border: 1px solid rgba(88,166,255,0.2);
+  border-left: 3px solid var(--accent-blue);
+  border-radius: 0 8px 8px 0;
+  padding: 10px 16px;
+  margin: 8px 0;
+  font-size: 13px;
+  color: var(--text-primary);
+  line-height: 1.8;
+}
+
+/* ===== Comparison table ===== */
+.cmp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  margin: 8px 0;
+}
+.cmp-table th {
+  background: var(--bg-card);
+  color: var(--accent-blue);
+  padding: 7px 10px;
+  text-align: left;
+  font-weight: 600;
+  border: 1px solid var(--border);
+}
+.cmp-table td {
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+.cmp-table tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+
+/* ===== Info cards ===== */
+.info-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 10px;
+}
+.info-card .card-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent-orange);
+  margin-bottom: 6px;
+}
+
+/* ===== Tags ===== */
+.tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 500;
+  margin: 2px;
+}
+.tag-blue { background: rgba(88,166,255,0.15); color: var(--accent-blue); border: 1px solid rgba(88,166,255,0.3); }
+.tag-green { background: rgba(63,185,80,0.15); color: var(--accent-green); border: 1px solid rgba(63,185,80,0.3); }
+.tag-orange { background: rgba(240,136,62,0.15); color: var(--accent-orange); border: 1px solid rgba(240,136,62,0.3); }
+.tag-purple { background: rgba(188,140,255,0.15); color: var(--accent-purple); border: 1px solid rgba(188,140,255,0.3); }
+
+/* ===== Highlight boxes ===== */
+.highlight-box {
+  background: rgba(88,166,255,0.08);
+  border: 1px solid rgba(88,166,255,0.25);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin: 8px 0;
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+.highlight-box.orange {
+  background: rgba(240,136,62,0.08);
+  border-color: rgba(240,136,62,0.25);
+}
+.highlight-box.green {
+  background: rgba(63,185,80,0.08);
+  border-color: rgba(63,185,80,0.25);
+}
+.highlight-box.purple {
+  background: rgba(188,140,255,0.08);
+  border-color: rgba(188,140,255,0.25);
+}
+
+/* ===== Divider ===== */
+.vdivider {
+  width: 1px;
+  background: var(--border);
+  flex-shrink: 0;
+}
+
+/* ===== Cover slide ===== */
+.slide-cover {
+  background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #1a2332 100%);
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px;
+}
+.cover-badge {
+  display: inline-block;
+  padding: 4px 16px;
+  background: rgba(88,166,255,0.1);
+  border: 1px solid rgba(88,166,255,0.3);
+  border-radius: 20px;
+  font-size: 12px;
+  color: var(--accent-blue);
+  letter-spacing: 0.05em;
+  margin-bottom: 20px;
+}
+.cover-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.3;
+  margin-bottom: 8px;
+}
+.cover-subtitle {
+  font-size: 15px;
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+}
+.cover-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+.cover-meta {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.8;
+}
+
+/* ===== TOC slide ===== */
+.toc-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 4px 0;
+}
+.toc-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.toc-item:hover {
+  border-color: var(--accent-blue);
+  background: rgba(88,166,255,0.05);
+}
+.toc-num {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent-blue);
+  min-width: 20px;
+  font-variant-numeric: tabular-nums;
+}
+.toc-content { flex: 1; }
+.toc-zh { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+.toc-en { font-size: 11px; color: var(--text-muted); font-style: italic; }
+
+/* ===== Lang switch ===== */
+.lang-zh .en-only { display: none; }
+.lang-en .zh-only { display: none; }
+.lang-zh .zh-only { display: block; }
+.lang-en .en-only { display: block; }
+
+/* ===== Slide footer ===== */
+.slide-footer {
+  padding: 8px 36px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-primary);
+  flex-shrink: 0;
+}
+.footer-source {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+.footer-tags { display: flex; gap: 4px; }
+
+/* ===== Navigation bar ===== */
+#navbar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: 52px;
+  background: rgba(13,17,23,0.95);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  backdrop-filter: blur(10px);
+  z-index: 100;
+}
+
+.nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: var(--font-main);
+}
+.nav-btn:hover { border-color: var(--accent-blue); color: var(--accent-blue); background: rgba(88,166,255,0.08); }
+.nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.nav-btn:disabled:hover { border-color: var(--border); color: var(--text-secondary); background: var(--bg-card); }
+
+#progress-bar-wrap {
+  flex: 1;
+  max-width: 300px;
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+#progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+/* ===== SVG Diagrams ===== */
+.diagram-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+}
+.diagram-wrap svg text { font-family: var(--font-main); }
+
+/* ===== Responsive scaling ===== */
+@media (max-width: 960px) {
+  :root {
+    --slide-width: calc(100vw - 24px);
+    --slide-height: calc(var(--slide-width) * 0.62);
+  }
+  .slide-body { padding: 14px 20px 12px; }
+  .slide-header { padding: 16px 20px 12px; }
+  .slide-footer { padding: 6px 20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Top Bar -->
+<div id="topbar">
+  <span class="title-short">AI 雙語知識庫</span>
+  <div class="controls">
+    <span id="page-counter">1 / 1</span>
+    <button class="lang-btn active" id="btn-zh" onclick="setLang('zh')" aria-label="切換至中文">中文</button>
+    <button class="lang-btn" id="btn-en" onclick="setLang('en')" aria-label="Switch to English">EN</button>
+  </div>
+</div>
+
+<div id="app">
+  <div id="slide-viewport">
+    <div id="slide-wrapper">
+
+<!-- ============================================================ -->
+<!-- SLIDE 0: 封面 -->
+<!-- ============================================================ -->
+<div class="slide active" id="slide-0" role="main" aria-label="封面投影片">
+  <div class="slide-cover">
+    <div class="cover-badge">研究所計算機概論 AI 雙語知識庫</div>
+    <div class="cover-title">從人工智慧到生成式 AI</div>
+    <div class="cover-subtitle">研究所計算機概論核心知識</div>
+    <div class="cover-subtitle" style="font-size:13px;margin-top:-12px;color:var(--text-muted);">From Artificial Intelligence to Generative AI: Core Knowledge for Graduate CS Exams</div>
+    <div class="cover-tags">
+      <span class="tag tag-blue">機器學習</span>
+      <span class="tag tag-green">深度學習</span>
+      <span class="tag tag-orange">強化學習</span>
+      <span class="tag tag-purple">Transformer / LLM</span>
+      <span class="tag tag-blue">中英雙語</span>
+    </div>
+    <div class="cover-meta">
+      適用學校：中正大學資管所、中山大學資管所、雲林科技大學資管所<br>
+      來源依據：Vaswani et al. 2017、Mnih et al. 2013、Brown et al. 2020 及公開學術教材<br>
+      版本：1.0 &nbsp;|&nbsp; 2026-11-24
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 1: 目錄 -->
+<!-- ============================================================ -->
+<div class="slide" id="slide-1" role="main" aria-label="課程目錄">
+  <div class="slide-header">
+    <div class="slide-chapter">目錄</div>
+    <div class="slide-title-zh">課程內容概覽</div>
+    <div class="slide-title-en">Table of Contents</div>
+  </div>
+  <div class="slide-body" style="display:block;padding:16px 36px;">
+    <div class="toc-grid">
+      <div class="toc-item" onclick="goToSlide(2)">
+        <span class="toc-num">Ch.1</span>
+        <div class="toc-content">
+          <div class="toc-zh">AI 發展脈絡</div>
+          <div class="toc-en">History of AI</div>
+        </div>
+      </div>
+      <div class="toc-item" onclick="goToSlide(5)">
+        <span class="toc-num">Ch.2</span>
+        <div class="toc-content">
+          <div class="toc-zh">傳統機器學習</div>
+          <div class="toc-en">Traditional ML</div>
+        </div>
+      </div>
+      <div class="toc-item" onclick="goToSlide(11)">
+        <span class="toc-num">Ch.3</span>
+        <div class="toc-content">
+          <div class="toc-zh">深度學習基礎</div>
+          <div class="toc-en">Deep Learning</div>
+        </div>
+      </div>
+      <div class="toc-item" onclick="goToSlide(16)">
+        <span class="toc-num">Ch.4</span>
+        <div class="toc-content">
+          <div class="toc-zh">Transformer 架構</div>
+          <div class="toc-en">Transformer Architecture</div>
+        </div>
+      </div>
+      <div class="toc-item" onclick="goToSlide(21)">
+        <span class="toc-num">Ch.5</span>
+        <div class="toc-content">
+          <div class="toc-zh">強化學習</div>
+          <div class="toc-en">Reinforcement Learning</div>
+        </div>
+      </div>
+      <div class="toc-item" onclick="goToSlide(26)">
+        <span class="toc-num">Ch.6</span>
+        <div class="toc-content">
+          <div class="toc-zh">大型語言模型</div>
+          <div class="toc-en">LLM &amp; Generative AI</div>
+        </div>
+      </div>
+      <div class="toc-item" onclick="goToSlide(31)">
+        <span class="toc-num">Ch.7</span>
+        <div class="toc-content">
+          <div class="toc-zh">重點比較彙整</div>
+          <div class="toc-en">Key Comparisons</div>
+        </div>
+      </div>
+      <div class="toc-item" onclick="goToSlide(34)">
+        <span class="toc-num">Ch.8</span>
+        <div class="toc-content">
+          <div class="toc-zh">英文考題解題示範</div>
+          <div class="toc-en">Exam Practice</div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:12px;">
+      <p style="font-size:11px;color:var(--text-muted);">使用說明：點擊章節卡片跳轉、鍵盤 &larr;&rarr; 切換頁面、右上角可切換中英文顯示模式。</p>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="footer-source">AI Knowledge Wiki | 研究所計算機概論 AI 雙語知識庫</span>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 2: AI 發展脈絡 -->
+<!-- ============================================================ -->
+<div class="slide" id="slide-2">
+  <div class="slide-header">
+    <div class="slide-chapter">Ch.1 AI 發展脈絡</div>
+    <div class="slide-title-zh">人工智慧的三次浪潮</div>
+    <div class="slide-title-en">Three Waves of Artificial Intelligence</div>
+  </div>
+  <div class="slide-body">
+    <div class="col">
+      <h3>發展時間軸</h3>
+      <div class="info-card">
+        <div class="card-label">第一波浪潮（1950-1980s）</div>
+        <ul>
+          <li><strong>符號 AI（Symbolic AI）</strong>：以邏輯規則與知識庫為核心</li>
+          <li>代表：專家系統（Expert System）</li>
+          <li>困境：脆弱、無法泛化，遭遇 AI 寒冬</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <div class="card-label">第二波浪潮（1980-2010s）</div>
+        <ul>
+          <li><strong>機器學習（Machine Learning）</strong>：從資料中學習統計規律</li>
+          <li>代表：SVM、決策樹、貝氏網路</li>
+          <li>成就：語音辨識、影像分類初步成功</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <div class="card-label">第三波浪潮（2010s-今）</div>
+        <ul>
+          <li><strong>深度學習（Deep Learning）</strong>：多層神經網路、大數據、GPU</li>
+          <li>代表：CNN（影像）、RNN（序列）、Transformer（語言）</li>
+          <li>成就：GPT、AlphaGo、DALL-E 等突破性成果</li>
+        </ul>
+      </div>
+    </div>
+    <div class="vdivider"></div>
+    <div class="col">
+      <h3 class="en-only">English Definition</h3>
+      <div class="highlight-box en-only">
+        <strong>Artificial Intelligence (AI)</strong> refers to the simulation of human intelligence by computer systems. Modern AI predominantly employs machine learning, wherein algorithms learn from data rather than relying on explicitly programmed rules. The current era is defined by deep learning — a subset of machine learning using multi-layered neural networks capable of learning hierarchical representations from large datasets.
+      </div>
+      <h3>AI 的三個學習範式</h3>
+      <table class="cmp-table">
+        <thead>
+          <tr><th>範式</th><th>輸入</th><th>輸出</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>監督式學習</strong><br><span style="font-size:11px;color:var(--text-muted);">Supervised</span></td><td>標記資料</td><td>預測/分類</td></tr>
+          <tr><td><strong>非監督式學習</strong><br><span style="font-size:11px;color:var(--text-muted);">Unsupervised</span></td><td>無標記資料</td><td>結構/群集</td></tr>
+          <tr><td><strong>強化學習</strong><br><span style="font-size:11px;color:var(--text-muted);">Reinforcement</span></td><td>環境反饋</td><td>策略/行動</td></tr>
+        </tbody>
+      </table>
+      <div class="highlight-box green" style="margin-top:8px;">
+        <strong>關鍵趨勢：</strong>生成式 AI（Generative AI）結合大規模預訓練語言模型（LLM），使 AI 能夠生成文字、圖像、程式碼，開創新的 AI 應用典範。
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="footer-source">來源：通識（AI 發展史）</span>
+    <div class="footer-tags"><span class="tag tag-blue">AI 概論</span></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 3: 機器學習分類 -->
+<!-- ============================================================ -->
+<div class="slide" id="slide-3">
+  <div class="slide-header">
+    <div class="slide-chapter">Ch.1 AI 發展脈絡</div>
+    <div class="slide-title-zh">機器學習分類總覽</div>
+    <div class="slide-title-en">Machine Learning Taxonomy</div>
+  </div>
+  <div class="slide-body">
+    <div class="col col-wide">
+      <h3>學習範式與代表演算法</h3>
+      <table class="cmp-table">
+        <thead>
+          <tr><th>類型</th><th>中文</th><th>代表演算法</th><th>典型應用</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Supervised Learning</td>
+            <td>監督式學習</td>
+            <td>KNN, SVM, Decision Tree, Linear/Logistic Regression, Neural Network</td>
+            <td>分類、回歸</td>
+          </tr>
+          <tr>
+            <td>Unsupervised Learning</td>
+            <td>非監督式學習</td>
+            <td>K-Means, DBSCAN, PCA, Autoencoder</td>
+            <td>分群、降維</td>
+          </tr>
+          <tr>
+            <td>Semi-supervised Learning</td>
+            <td>半監督式學習</td>
+            <td>Self-training, Label Propagation</td>
+            <td>少標記資料場景</td>
+          </tr>
+          <tr>
+            <td>Reinforcement Learning</td>
+            <td>強化學習</td>
+            <td>Q-Learning, DQN, PPO, Actor-Critic</td>
+            <td>遊戲、機器人、LLM 對齊</td>
+          </tr>
+          <tr>
+            <td>Self-supervised Learning</td>
+            <td>自監督式學習</td>
+            <td>GPT 預訓練, BERT, Contrastive Learning</td>
+            <td>大型語言模型預訓練</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="highlight-box" style="margin-top:10px;">
+        <strong>重要觀念：</strong>監督式學習需要<strong>標記資料（Labeled Data）</strong>，非監督式學習只需<strong>原始資料</strong>。現代 LLM 採用自監督學習——以「預測下一個詞」為目標，自動從大量無標記文字中學習。
+      </div>
+    </div>
+    <div class="vdivider"></div>
+    <div class="col col-narrow">
+      <h3>Overfitting vs Underfitting</h3>
+      <div class="info-card">
+        <div class="card-label">過擬合（Overfitting）</div>
+        <ul>
+          <li>訓練集表現好，測試集差</li>
+          <li>模型過於複雜</li>
+          <li>解法：正規化、Dropout、更多資料</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <div class="card-label">欠擬合（Underfitting）</div>
+        <ul>
+          <li>訓練集與測試集均表現差</li>
+          <li>模型過於簡單</li>
+          <li>解法：增加模型複雜度</li>
+        </ul>
+      </div>
+      <div class="highlight-box orange">
+        <strong>Bias-Variance Tradeoff：</strong>高偏差 = Underfitting；高變異數 = Overfitting。
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="footer-source">來源：通識（機器學習分類）</span>
+    <div class="footer-tags"><span class="tag tag-blue">ML 分類</span></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 4: AI 圖解（模型評估） -->
+<!-- ============================================================ -->
+<div class="slide" id="slide-4">
+  <div class="slide-header">
+    <div class="slide-chapter">Ch.1 AI 發展脈絡</div>
+    <div class="slide-title-zh">模型評估指標</div>
+    <div class="slide-title-en">Model Evaluation Metrics</div>
+  </div>
+  <div class="slide-body">
+    <div class="col">
+      <h3>混淆矩陣（Confusion Matrix）</h3>
+      <table class="cmp-table">
+        <thead>
+          <tr><th></th><th>預測正（Positive）</th><th>預測負（Negative）</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>實際正</strong></td><td style="color:var(--accent-green);">TP（真正例）</td><td style="color:var(--accent-red);">FN（漏報）</td></tr>
+          <tr><td><strong>實際負</strong></td><td style="color:var(--accent-orange);">FP（誤報）</td><td style="color:var(--accent-green);">TN（真負例）</td></tr>
+        </tbody>
+      </table>
+      <div class="formula-block" style="margin-top:10px;">
+        <strong>Accuracy</strong> = (TP + TN) / (TP + TN + FP + FN)<br>
+        <strong>Precision</strong> = TP / (TP + FP)&nbsp;&nbsp;<em style="color:var(--text-muted);">— 預測正確率</em><br>
+        <strong>Recall</strong> = TP / (TP + FN)&nbsp;&nbsp;<em style="color:var(--text-muted);">— 找回率 / 靈敏度</em><br>
+        <strong>F1-Score</strong> = 2 × Precision × Recall / (Precision + Recall)
+      </div>
+      <div class="highlight-box orange" style="margin-top:8px;">
+        <strong>重要：</strong>在資料不平衡（Class Imbalance）時，Accuracy 可能誤導評估。應使用 F1-Score 或 ROC-AUC。
+      </div>
+    </div>
+    <div class="vdivider"></div>
+    <div class="col">
+      <h3>交叉驗證（Cross-Validation）</h3>
+      <div class="info-card">
+        <div class="card-label">K-Fold Cross Validation</div>
+        <ul>
+          <li>將資料分為 K 份（通常 K=5 或 10）</li>
+          <li>輪流以一份為測試集，其餘為訓練集</li>
+          <li>K 次結果取平均作為最終評估</li>
+          <li>優點：更穩健的泛化估計</li>
+        </ul>
+      </div>
+      <h3>常用損失函數</h3>
+      <div class="formula-block">
+        <strong>MSE</strong>（回歸）: $\frac{1}{n}\sum_{i=1}^{n}(y_i - \hat{y}_i)^2$<br>
+        <strong>Cross-Entropy</strong>（分類）: $-\sum y_i \log(\hat{y}_i)$
+      </div>
+      <h3>英文術語</h3>
+      <ul>
+        <li><strong>Generalization</strong>：泛化能力（在未見資料的表現）</li>
+        <li><strong>Regularization</strong>：正規化（防止過擬合）</li>
+        <li><strong>Hyperparameter</strong>：超參數（訓練前設定的參數）</li>
+      </ul>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="footer-source">來源：通識（模型評估）</span>
+    <div class="footer-tags"><span class="tag tag-blue">評估指標</span></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 5: KNN -->
+<!-- ============================================================ -->
+<div class="slide" id="slide-5">
+  <div class="slide-header">
+    <div class="slide-chapter">Ch.2 傳統機器學習</div>
+    <div class="slide-title-zh">K 近鄰演算法（KNN）</div>
+    <div class="slide-title-en">K-Nearest Neighbors (KNN)</div>
+  </div>
+  <div class="slide-body">
+    <div class="col">
+      <h3>核心概念</h3>
+      <p>KNN 是一種<strong>非參數（Non-parametric）</strong>的監督式學習演算法。預測時，找出距離查詢點最近的 K 個訓練樣本，以多數決（分類）或平均值（回歸）決定結果。</p>
+      <div class="highlight-box">
+        <strong>直覺理解：</strong>「物以類聚」。一個樣本的類別，由其周圍最近的 K 個鄰居決定。
+      </div>
+      <h3>演算法步驟</h3>
+      <ol>
+        <li>計算查詢點與所有訓練點的距離</li>
+        <li>排序，取最近的 K 個點</li>
+        <li>分類：K 個鄰居中多數決；回歸：取平均</li>
+      </ol>
+      <div class="formula-block">
+        <strong>Euclidean Distance（歐氏距離）：</strong><br>
+        $d(x, y) = \sqrt{\sum_{i=1}^{n}(x_i - y_i)^2}$
+      </div>
+    </div>
+    <div class="vdivider"></div>
+    <div class="col">
+      <h3>英文技術定義</h3>
+      <div class="highlight-box en-only">
+        K-Nearest Neighbors (KNN) is a non-parametric, instance-based learning algorithm. It makes predictions by identifying the K training examples closest to a query point in feature space, using a distance metric such as Euclidean or Manhattan distance. For classification, the majority class among K neighbors is returned; for regression, the mean of K neighbors' values is used. KNN has no explicit training phase — computation occurs entirely at inference time, making it a "lazy learner."
+      </div>
+      <h3>優點與缺點</h3>
+      <table class="cmp-table">
+        <thead><tr><th>優點</th><th>缺點</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>概念簡單、無訓練階段</td>
+            <td>推論時間 O(nd)，較慢</td>
+          </tr>
+          <tr>
+            <td>不假設資料分布</td>
+            <td>高維度時效果差<br><span style="font-size:11px;color:var(--text-muted);">（維度詛咒 Curse of Dimensionality）</span></td>
+          </tr>
+          <tr>
+            <td>適合小型資料集</td>
+            <td>需儲存所有訓練資料</td>
+          </tr>
+          <tr>
+            <td>自然支持多分類</td>
+            <td>K 值選擇影響結果</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="highlight-box orange" style="margin-top:8px;">
+        <strong>K 值選擇：</strong>K 太小 &rarr; 過擬合；K 太大 &rarr; 欠擬合。通常以交叉驗證選取最佳 K。
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="footer-source">來源：通識（KNN）| wiki/concepts/ml-fundamentals/k-nearest-neighbors.md</span>
+    <div class="footer-tags"><span class="tag tag-blue">監督式學習</span><span class="tag tag-green">分類</span></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 6: SVM -->
+<!-- ============================================================ -->
+<div class="slide" id="slide-6">
+  <div class="slide-header">
+    <div class="slide-chapter">Ch.2 傳統機器學習</div>
+    <div class="slide-title-zh">支援向量機（SVM）</div>
+    <div class="slide-title-en">Support Vector Machine (SVM)</div>
+  </div>
+  <div class="slide-body">
+    <div class="col">
+      <h3>核心原理：最大化邊界</h3>
+      <p>SVM 尋找能<strong>最大化類別間邊界（Margin）</strong>的超平面（Hyperplane）。<strong>支援向量（Support Vectors）</strong>是距離超平面最近的訓練樣本，決定超平面的位置。</p>
+      <div class="formula-block">
+        <strong>線性可分 SVM 目標：</strong><br>
+        最大化邊界 $\frac{2}{||w||}$，等價於最小化 $\frac{1}{2}||w||^2$<br>
+        限制條件：$y_i(w \cdot x_i + b) \geq 1$
+      </div>
+      <h3>Kernel Trick（核技巧）</h3>
+      <p>當資料線性不可分時，使用核函數將資料映射到高維空間，使其線性可分：</p>
+      <ul>
+        <li><strong>RBF Kernel（高斯核）</strong>：最常用，$K(x,z)=\exp(-\gamma||x-z||^2)$</li>
+        <li><strong>Polynomial Kernel</strong>：$K(x,z)=(x \cdot z + c)^d$</li>
+        <li><strong>Linear Kernel</strong>：適合高維稀疏資料</li>
+      </ul>
+    </div>
+    <div class="vdivider"></div>
+    <div class="col">
+      <h3>英文技術定義</h3>
+      <div class="highlight-box en-only">
+        A Support Vector Machine (SVM) is a discriminative classifier that finds the optimal separating hyperplane by maximizing the margin between classes. Support vectors are the training examples lying on the margin boundary; they alone determine the decision boundary. The kernel trick implicitly maps data into a high-dimensional feature space, enabling SVM to solve non-linearly separable problems efficiently without computing the explicit mapping.
+      </div>
+      <h3>Soft Margin SVM</h3>
+      <div class="info-card">
+        <div class="card-label">處理不可完全分開的資料</div>
+        <ul>
+          <li>允許少量分類錯誤（Slack Variables ξᵢ）</li>
+          <li>超參數 <strong>C</strong>：控制錯誤容忍度</li>
+          <li>C 大 → 嚴格邊界，易過擬合</li>
+          <li>C 小 → 寬鬆邊界，易欠擬合</li>
+        </ul>
+      </div>
+      <h3>重要術語</h3>
+      <ul>
+        <li><strong>Hyperplane</strong>：超平面（決策邊界）</li>
+        <li><strong>Margin</strong>：邊界（越大越好）</li>
+        <li><strong>Support Vectors</strong>：支援向量</li>
+        <li><strong>Kernel Function</strong>：核函數</li>
+      </ul>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="footer-source">來源：通識（SVM）| wiki/concepts/ml-fundamentals/svm.md</span>
+    <div class="footer-tags"><span class="tag tag-blue">監督式學習</span><span class="tag tag-green">分類</span></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 7: Decision Tree -->
+<!-- ============================================================ -->
+<div class="slide" id="slide-7">
+  <div class="slide-header">
+    <div class="slide-chapter">Ch.2 傳統機器學習</div>
+    <div class="slide-title-zh">決策樹（Decision Tree）</div>
+    <div class="slide-title-en">Decision Tree</div>
+  </div>
+  <div class="slide-body">
+    <div class="col">
+      <h3>核心概念</h3>
+      <p>決策樹以<strong>樹狀結構</strong>進行分類或回歸，每個內部節點（Internal Node）代表一個特徵的測試條件，每個葉節點（Leaf Node）代表預測結果。</p>
+      <h3>節點分裂標準</h3>
+      <div class="formula-block">
+        <strong>熵（Entropy）：</strong>$H(S) = -\sum_{c} p_c \log_2 p_c$<br><br>
+        <strong>資訊增益（Information Gain）：</strong><br>
+        $IG(S, A) = H(S) - \sum_{v \in vals(A)} \frac{|S_v|}{|S|} H(S_v)$<br><br>
+        <strong>Gini Impurity（CART 使用）：</strong><br>
+        $Gini(S) = 1 - \sum_c p_c^2$
+      </div>
+      <div class="highlight-box">
+        選擇<strong>資訊增益最大</strong>（或 Gini 最小）的特徵作為分裂點。
+      </div>
+    </div>
+    <div class="vdivider"></div>
+    <div class="col">
+      <h3>主要演算法比較</h3>
+      <table class="cmp-table">
+        <thead><tr><th>演算法</th><th>分裂標準</th><th>特點</th></tr></thead>
+        <tbody>
+          <tr><td><strong>ID3</strong></td><td>Information Gain</td><td>只支援類別特徵</td></tr>
+          <tr><td><strong>C4.5</strong></td><td>Gain Ratio</td><td>支援連續特徵、缺失值</td></tr>
+          <tr><td><strong>CART</strong></td><td>Gini / MSE</td><td>二元分裂、支援回歸</td></tr>
+        </tbody>
+      </table>
+      <h3>過擬合與剪枝</h3>
+      <div class="info-card">
+        <div class="card-label">剪枝（Pruning）</div>
+        <ul>
+          <li><strong>預剪枝（Pre-pruning）</strong>：設最大深度、最小樣本數</li>
+          <li><strong>後剪枝（Post-pruning）</strong>：先建完整樹再修剪</li>
+        </ul>
+      </div>
+      <h3>集成方法延伸</h3>
+      <ul>
+        <li><strong>Random Forest</strong>：多棵決策樹的 Bagging</li>
+        <li><strong>Gradient Boosting</strong>：序列式 Boosting（XGBoost）</li>
+      </ul>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="footer-source">來源：通識（Decision Tree）| wiki/concepts/ml-fundamentals/decision-tree.md</span>
+    <div class="footer-tags"><span class="tag tag-blue">監督式學習</span><span class="tag tag-orange">分類 / 回歸</span></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 8: Regression -->
+<!-- ============================================================ -->
+<div class="slide" id="slide-8">
+  <div class="slide-header">
+    <div class="slide-chapter">Ch.2 傳統機器學習</div>
+    <div class="slide-title-zh">回歸分析（Regression）</div>
+    <div class="slide-title-en">Regression Analysis</div>
+  </div>
+  <div class="slide-body">
+    <div class="col">
+      <h3>線性回歸（Linear Regression）</h3>
+      <div class="formula-block">
+        預測值：$\hat{y} = w_0 + w_1 x_1 + w_2 x_2 + ... + w_n x_n$<br><br>
+        損失函數（MSE）：$L = \frac{1}{n}\sum_{i=1}^{n}(y_i - \hat{y}_i)^2$<br><br>
+        梯度下降更新：$w \leftarrow w - \alpha \frac{\partial L}{\partial w}$
+      </div>
+      <h3>邏輯斯回歸（Logistic Regression）</h3>
+      <p>用於<strong>二元分類</strong>，以 Sigmoid 函數將線性輸出映射至 [0,1]：</p>
+      <div class="formula-block">
+        $\sigma(z) = \frac{1}{1 + e^{-z}}$<br>
+        預測機率：$P(y=1|x) = \sigma(w \cdot x + b)$<br>
+        損失：Cross-Entropy Loss
+      </div>
+      <div class="highlight-box orange">
+        <strong>注意：</strong>Logistic Regression 雖名為「回歸」，但是分類演算法。
+      </div>
+    </div>
+    <div class="vdivider"></div>
+    <div class="col">
+      <h3>正規化（Regularization）</h3>
+      <div class="info-card">
+        <div class="card-label">L2 正規化（Ridge Regression）</div>
+        <p>損失 += λ||w||²，使權重接近 0 但不為 0。防止過擬合，穩定性高。</p>
+      </div>
+      <div class="info-card">
+        <div class="card-label">L1 正規化（Lasso Regression）</div>
+        <p>損失 += λ|w|，使部分權重精確等於 0。自動特徵選取（稀疏解）。</p>
+      </div>
+      <div class="info-card">
+        <div class="card-label">Elastic Net</div>
+        <p>結合 L1 + L2，同時兼顧穩定性與稀疏性。</p>
+      </div>
+      <h3>英文術語</h3>
+      <ul>
+        <li><strong>Gradient Descent</strong>：梯度下降</li>
+        <li><strong>Learning Rate (α)</strong>：學習率</li>
+        <li><strong>Regularization (λ)</strong>：正規化強度</li>
+        <li><strong>Sigmoid / Activation Function</strong>：激活函數</li>
+      </ul>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="footer-source">來源：通識（Regression）| wiki/concepts/ml-fundamentals/regression.md</span>
+    <div class="footer-tags"><span class="tag tag-blue">監督式學習</span><span class="tag tag-orange">回歸 / 分類</span></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 9: Clustering -->
+<!-- ============================================================ -->
+<div class="slide" id="slide-9">
+  <div class="slide-header">
+    <div class="slide-chapter">Ch.2 傳統機器學習</div>
+    <div class="slide-title-zh">分群演算法（Clustering）</div>
+    <div class="slide-title-en">Clustering Algorithms</div>
+  </div>
+  <div class="slide-body">
+    <div class="col">
+      <h3>K-Means 演算法</h3>
+      <p>最常見的非監督式學習演算法，將 n 個資料點分成 K 個群集。</p>
+      <div class="info-card">
+        <div class="card-label">演算法步驟</div>
+        <ol>
+          <li>隨機初始化 K 個中心點（Centroid）</li>
+          <li>將每個資料點分配至最近的中心點</li>
+          <li>重新計算每個群集的中心點（取平均）</li>
+          <li>重複步驟 2-3 直到收斂</li>
+        </ol>
+      </div>
+      <div class="formula-block">
+        目標：最小化群內距離平方和（WCSS）<br>
+        $J = \sum_{k=1}^{K} \sum_{x \in C_k} ||x - \mu_k||^2$
+      </div>
+      <div class="highlight-box orange">
+        <strong>注意：</strong>K-Means 對初始點敏感（建議使用 K-Means++ 初始化）、對離群值敏感、需要預先指定 K。
+      </div>
+    </div>
+    <div class="vdivider"></div>
+    <div class="col">
+      <h3>選擇最佳 K 值</h3>
+      <div class="info-card">
+        <div class="card-label">Elbow Method（手肘法）</div>
+        <p>繪製 K 值 vs WCSS 圖，選擇「手肘點」（WCSS 下降明顯趨緩的 K）。</p>
+      </div>
+      <div class="info-card">
+        <div class="card-label">Silhouette Score</div>
+        <p>衡量每個樣本與同群的凝聚度 vs 與其他群的分離度，分數越高越好（範圍 -1 到 1）。</p>
+      </div>
+      <h3>其他分群方法</h3>
+      <table class="cmp-table">
+        <thead><tr><th>方法</th><th>特點</th></tr></thead>
+        <tbody>
+          <tr><td>Hierarchical Clustering</td><td>產生樹狀圖（Dendrogram），無需預設 K</td></tr>
+          <tr><td>DBSCAN</td><td>密度導向，可發現任意形狀群集、自動辨識離群值</td></tr>
+          <tr><td>GMM</td><td>高斯混合模型，軟分配（Soft Assignment）</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="footer-source">來源：通識（Clustering）| wiki/concepts/ml-fundamentals/clustering.md</span>
+    <div class="footer-tags"><span class="tag tag-purple">非監督式學習</span></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 10: ML 比較總結 -->
+<!-- ============================================================ -->
+<div class="slide" id="slide-10">
+  <div class="slide-header">
+    <div class="slide-chapter">Ch.2 傳統機器學習</div>
+    <div class="slide-title-zh">傳統機器學習演算法比較</div>
+    <div class="slide-title-en">Traditional ML Algorithm Comparison</div>
+  </div>
+  <div class="slide-body" style="display:block;padding:16px 36px;">
+    <table class="cmp-table" style="width:100%;">
+      <thead>
+        <tr>
+          <th>演算法</th>
+          <th>類型</th>
+          <th>時間複雜度（推論）</th>
+          <th>優點</th>
+          <th>缺點</th>
+          <th>適用場景</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>KNN</strong></td>
+          <td>監督</td>
+          <td>O(nd)</td>
+          <td>無訓練、簡單</td>
+          <td>推論慢、高維差</td>
+          <td>小資料集分類</td>
+        </tr>
+        <tr>
+          <td><strong>SVM</strong></td>
+          <td>監督</td>
+          <td>O(n_sv × d)</td>
+          <td>高維有效、核函數靈活</td>
+          <td>大資料集慢、核選擇難</td>
+          <td>文字分類、影像</td>
+        </tr>
+        <tr>
+          <td><strong>Decision Tree</strong></td>
+          <td>監督</td>
+          <td>O(depth)</td>
+          <td>可解釋、無需正規化</td>
+          <td>易過擬合</td>
+          <td>規則提取、特徵重要性</td>
+        </tr>
+        <tr>
+          <td><strong>Linear Reg.</strong></td>
+          <td>監督</td>
+          <td>O(d)</td>
+          <td>快速、可解釋</td>
+          <td>假設線性關係</td>
+          <td>連續值預測</td>
+        </tr>
+        <tr>
+          <td><strong>Logistic Reg.</strong></td>
+          <td>監督</td>
+          <td>O(d)</td>
+          <td>機率輸出、穩定</td>
+          <td>線性決策邊界</td>
+          <td>二元分類</td>
+        </tr>
+        <tr>
+          <td><strong>K-Means</strong></td>
+          <td>非監督</td>
+          <td>O(nKd)</td>
+          <td>簡單、可擴展</td>
+          <td>需預設 K、球形群集假設</td>
+          <td>客戶分群、資料探索</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="highlight-box" style="margin-top:12px;">
+      <strong>選擇指引：</strong>資料小且簡單 &rarr; KNN 或 Logistic Regression；高維稀疏 &rarr; SVM；需要可解釋性 &rarr; Decision Tree；無標記資料 &rarr; K-Means 或 DBSCAN。
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="footer-source">來源：通識（ML 比較）| wiki/comparisons/</span>
+    <div class="footer-tags"><span class="tag tag-blue">比較彙整</span></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 11: 神經網路基礎 -->
+<!-- ============================================================ -->
+<div class="slide" id="slide-11">
+  <div class="slide-header">
+    <div class="slide-chapter">Ch.3 深度學習基礎</div>
+    <div class="slide-title-zh">神經網路與感知器</div>
+    <div class="slide-title-en">Neural Networks &amp; Perceptron</div>
+  </div>
+  <div class="slide-body">
+    <div class="col">
+      <h3>感知器（Perceptron）</h3>
+      <p>神經網路的最小單元，模擬生物神經元。接收多個輸入，計算加權總和，通過激活函數輸出。</p>
+      <div class="formula-block">
+        $z = \sum_{i=1}^{n} w_i x_i + b$<br>
+        $a = f(z)$ &nbsp;&nbsp;<em style="color:var(--text-muted);">（激活函數）</em>
+      </div>
+      <h3>常用激活函數</h3>
+      <table class="cmp-table">
+        <thead><tr><th>函數</th><th>公式</th><th>特點</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Sigmoid</strong></td><td>1/(1+e⁻ˢ)</td><td>輸出 [0,1]，二分類</td></tr>
+          <tr><td><strong>Tanh</strong></td><td>(eˢ-e⁻ˢ)/(eˢ+e⁻ˢ)</td><td>輸出 [-1,1]</td></tr>
+          <tr><td><strong>ReLU</strong></td><td>max(0, z)</td><td>最常用，解決梯度消失</td></tr>
+          <tr><td><strong>Softmax</strong></td><td>eᶻⁱ/Σeᶻʲ</td><td>多分類輸出層</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="vdivider"></div>
+    <div class="col">
+      <h3>反向傳播（Backpropagation）</h3>
+      <div class="info-card">
+        <div class="card-label">訓練流程</div>
+        <ol>
+          <li><strong>前向傳播（Forward Pass）</strong>：計算預測輸出</li>
+          <li><strong>計算損失（Loss）</strong>：比較預測與真實值</li>
+          <li><strong>反向傳播（Backward Pass）</strong>：用鏈式法則計算各層梯度</li>
+          <li><strong>更新參數（Weight Update）</strong>：梯度下降</li>
+        </ol>
+      </div>
+      <div class="highlight-box orange">
+        <strong>梯度消失（Vanishing Gradient）：</strong>深層網路中，梯度在反向傳播時指數衰減，使淺層權重無法有效更新。ReLU 和 Batch Normalization 可緩解此問題。
+      </div>
+      <h3>英文核心術語</h3>
+      <ul>
+        <li><strong>Weight / Bias</strong>：權重 / 偏置</li>
+        <li><strong>Gradient Descent</strong>：梯度下降</li>
+        <li><strong>Chain Rule</strong>：鏈式法則</li>
+        <li><strong>Epoch / Batch / Mini-batch</strong>：訓練週期 / 批次</li>
+      </ul>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="footer-source">來源：通識（神經網路）| wiki/concepts/deep-learning/neural-network.md</span>
+    <div class="footer-tags"><span class="tag tag-green">深度學習</span></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 12: CNN -->
+<!-- ============================================================ -->
+<div class="slide" id="slide-12">
+  <div class="slide-header">
+    <div class="slide-chapter">Ch.3 深度學習基礎</div>
+    <div class="slide-title-zh">卷積神經網路（CNN）</div>
+    <div class="slide-title-en">Convolutional Neural Network (CNN)</div>
+  </div>
+  <div class="slide-body">
+    <div class="col">
+      <h3>核心元件</h3>
+      <div class="info-card">
+        <div class="card-label">卷積層（Convolutional Layer）</div>
+        <p>使用<strong>卷積核（Filter/Kernel）</strong>在輸入特徵圖上滑動，提取局部特徵。多個不同的卷積核可提取不同特徵（邊緣、紋理等）。</p>
+      </div>
+      <div class="info-card">
+        <div class="card-label">池化層（Pooling Layer）</div>
+        <p><strong>Max Pooling</strong>：取區域最大值，降低特徵圖尺寸，提高平移不變性。</p>
+      </div>
+      <div class="info-card">
+        <div class="card-label">全連接層（Fully Connected Layer）</div>
+        <p>卷積層提取的特徵圖展平後，透過全連接層進行最終分類。</p>
+      </div>
+      <div class="highlight-box">
+        <strong>CNN 優勢：</strong>參數共享（Parameter Sharing）大幅減少參數量；局部感受野（Receptive Field）捕捉空間局部特徵。
+      </div>
+    </div>
+    <div class="vdivider"></div>
+    <div class="col">
+      <h3>英文技術定義</h3>
+      <div class="highlight-box en-only">
+        A Convolutional Neural Network (CNN) is a deep learning architecture designed for processing grid-structured data such as images. CNNs exploit three key ideas: local connectivity (each neuron connects to a local region of the input), parameter sharing (the same filter is applied across all spatial positions), and hierarchical feature extraction (early layers detect edges; deeper layers detect complex patterns). These properties make CNNs highly effective for image classification, object detection, and segmentation tasks.
+      </div>
+      <h3>重要超參數</h3>
+      <table class="cmp-table">
+        <thead><tr><th>參數</th><th>說明</th></tr></thead>
+        <tbody>
+          <tr><td>Filter Size</td><td>卷積核大小（如 3×3, 5×5）</td></tr>
+          <tr><td>Stride</td><td>卷積核滑動步長</td></tr>
+          <tr><td>Padding</td><td>邊緣補零，保持特徵圖尺寸</td></tr>
+          <tr><td>Depth</td><td>卷積核數量（輸出通道數）</td></tr>
+        </tbody>
+      </table>
+      <h3>經典架構</h3>
+      <ul>
+        <li><strong>LeNet-5</strong>（1998）：最早 CNN 應用於手寫數字辨識</li>
+        <li><strong>AlexNet</strong>（2012）：深度學習影像競賽突破</li>
+        <li><strong>ResNet</strong>（2015）：殘差連接解決梯度消失</li>
+      </ul>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="footer-source">來源：通識（CNN）| wiki/concepts/deep-learning/cnn.md</span>
+    <div class="footer-tags"><span class="tag tag-green">深度學習</span><span class="tag tag-blue">電腦視覺</span></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 13: RNN / LSTM -->
+<!-- ============================================================ -->
+<div class="slide" id="slide-13">
+  <div class="slide-header">
+    <div class="slide-chapter">Ch.3 深度學習基礎</div>
+    <div class="slide-title-zh">循環神經網路與 LSTM</div>
+    <div class="slide-title-en">RNN &amp; Long Short-Term Memory (LSTM)</div>
+  </div>
+  <div class="slide-body">
+    <div class="col">
+      <h3>循環神經網路（RNN）</h3>
+      <p>RNN 設計用於處理<strong>序列資料</strong>（文字、語音、時間序列）。每個時間步的隱藏狀態 $h_t$ 由當前輸入 $x_t$ 和前一時間步的隱藏狀態 $h_{t-1}$ 共同決定：</p>
+      <div class="formula-block">
+        $h_t = \tanh(W_h h_{t-1} + W_x x_t + b)$
+      </div>
+      <div class="highlight-box orange">
+        <strong>RNN 的問題：梯度消失 / 梯度爆炸。</strong>長序列中，早期資訊難以傳遞至後期，導致「長期依賴問題（Long-term Dependency Problem）」。
+      </div>
+      <h3>Gradient Clipping</h3>
+      <p>限制梯度最大值，防止梯度爆炸：$g \leftarrow g \cdot \min(1, \theta/||g||)$</p>
+    </div>
+    <div class="vdivider"></div>
+    <div class="col">
+      <h3>長短期記憶網路（LSTM）</h3>
+      <p>LSTM 透過<strong>閘控機制（Gating Mechanism）</strong>選擇性地記憶或遺忘資訊，解決長期依賴問題。</p>
+      <div class="info-card">
+        <div class="card-label">三個閘（Gate）的功能</div>
+        <ul>
+          <li><strong>Forget Gate（遺忘閘）</strong>：決定丟棄 Cell State 中哪些資訊</li>
+          <li><strong>Input Gate（輸入閘）</strong>：決定哪些新資訊寫入 Cell State</li>
+          <li><strong>Output Gate（輸出閘）</strong>：決定輸出哪部分 Cell State</li>
+        </ul>
+      </div>
+      <div class="highlight-box green">
+        <strong>LSTM vs Transformer：</strong>LSTM 本質上是序列化處理，無法平行計算。Transformer 透過 Self-Attention 實現平行化，訓練效率遠高於 LSTM，已成為 NLP 主流架構。（來源：[[source-vaswani-2017-attention]]）
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="footer-source">來源：通識（RNN/LSTM）| wiki/concepts/deep-learning/rnn-lstm.md</span>
+    <div class="footer-tags"><span class="tag tag-green">深度學習</span><span class="tag tag-purple">NLP</span></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 14: 深度學習訓練技巧 -->
+<!-- ============================================================ -->
+<div class="slide" id="slide-14">
+  <div class="slide-header">
+    <div class="slide-chapter">Ch.3 深度學習基礎</div>
+    <div class="slide-title-zh">深度學習訓練技巧</div>
+    <div class="slide-title-en">Deep Learning Training Techniques</div>
+  </div>
+  <div class="slide-body">
+    <div class="col">
+      <h3>防止過擬合</h3>
+      <div class="info-card">
+        <div class="card-label">Dropout</div>
+        <p>訓練時隨機「關閉」部分神經元（機率 p），強迫網路學習更鬆散的特徵表示。推論時所有神經元啟動（輸出乘以 1-p 補償）。</p>
+      </div>
+      <div class="info-card">
+        <div class="card-label">Batch Normalization</div>
+        <p>在每個 mini-batch 內對特徵進行標準化（均值 0、方差 1），加速訓練收斂，降低對學習率的敏感性，也有正規化效果。</p>
+      </div>
+      <h3>優化器</h3>
+      <table class="cmp-table">
+        <thead><tr><th>優化器</th><th>特點</th></tr></thead>
+        <tbody>
+          <tr><td>SGD</td><td>隨機梯度下降，基礎版</td></tr>
+          <tr><td>Momentum</td><td>加入慣性，加速收斂</td></tr>
+          <tr><td>Adam</td><td>自適應學習率，最廣泛使用</td></tr>
+          <tr><td>AdamW</td><td>Adam + 權重衰減，LLM 訓練常用</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="vdivider"></div>
+    <div class="col">
+      <h3>學習率排程</h3>
+      <div class="info-card">
+        <div class="card-label">Warmup + Decay</div>
+        <p>訓練初期線性增加學習率（Warmup），之後逐漸衰減。Transformer 論文（Vaswani 2017）使用此策略，warmup_steps = 4000。（來源：[[source-vaswani-2017-attention]]）</p>
+      </div>
+      <div class="info-card">
+        <div class="card-label">Cosine Annealing</div>
+        <p>學習率依餘弦函數衰減，訓練後期精細收斂。</p>
+      </div>
+      <h3>遷移學習（Transfer Learning）</h3>
+      <div class="highlight-box">
+        使用預訓練模型（Pre-trained Model）的權重作為初始點，針對目標任務微調（Fine-tuning）。在資料量少時效果顯著。
+      </div>
+      <h3>資料增強（Data Augmentation）</h3>
+      <ul>
+        <li>影像：翻轉、旋轉、裁剪、色彩抖動</li>
+        <li>文字：Back Translation、Random Masking</li>
+      </ul>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="footer-source">來源：通識（深度學習訓練技巧）</span>
+    <div class="footer-tags"><span class="tag tag-green">深度學習</span><span class="tag tag-orange">訓練技巧</span></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 15: DL 章節小結 -->
+<!-- ============================================================ -->
+<div class="slide" id="slide-15">
+  <div class="slide-header">
+    <div class="slide-chapter">Ch.3 深度學習基礎</div>
+    <div class="slide-title-zh">深度學習架構演進</div>
+    <div class="slide-title-en">Evolution of Deep Learning Architectures</div>
+  </div>
+  <div class="slide-body" style="display:block;padding:16px 36px;">
+    <div style="display:flex;gap:12px;margin-bottom:12px;">
+      <div style="flex:1;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:12px;">
+        <div style="font-size:11px;color:var(--accent-orange);font-weight:600;margin-bottom:6px;">1986-2000s</div>
+        <div style="font-size:14px;font-weight:700;color:var(--text-primary);">多層感知器</div>
+        <div style="font-size:12px;color:var(--text-muted);">MLP / Backpropagation</div>
+        <ul style="font-size:12px;color:var(--text-secondary);margin-top:6px;padding-left:14px;">
+          <li>Rumelhart et al. 1986</li>
+          <li>BP 演算法奠定基礎</li>
+        </ul>
+      </div>
+      <div style="flex:1;background:var(--bg-card);border:1px solid rgba(88,166,255,0.3);border-radius:8px;padding:12px;">
+        <div style="font-size:11px;color:var(--accent-orange);font-weight:600;margin-bottom:6px;">2012-2015</div>
+        <div style="font-size:14px;font-weight:700;color:var(--text-primary);">卷積神經網路</div>
+        <div style="font-size:12px;color:var(--text-muted);">CNN / AlexNet / ResNet</div>
+        <ul style="font-size:12px;color:var(--text-secondary);margin-top:6px;padding-left:14px;">
+          <li>ImageNet 競賽突破</li>
+          <li>GPU 加速深度學習</li>
+        </ul>
+      </div>
+      <div style="flex:1;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:12px;">
+        <div style="font-size:11px;color:var(--accent-orange);font-weight:600;margin-bottom:6px;">2014-2019</div>
+        <div style="font-size:14px;font-weight:700;color:var(--text-primary);">序列模型</div>
+        <div style="font-size:12px;color:var(--text-muted);">RNN / LSTM / GRU</div>
+        <ul style="font-size:12px;color:var(--text-secondary);margin-top:6px;padding-left:14px;">
+          <li>語言模型、機器翻譯</li>
+          <li>Seq2Seq + Attention</li>
+        </ul>
+      </div>
+      <div style="flex:1;background:var(--bg-card);border:1px solid rgba(188,140,255,0.3);border-radius:8px;padding:12px;">
+        <div style="font-size:11px;color:var(--accent-purple);font-weight:600;margin-bottom:6px;">2017-今</div>
+        <div style="font-size:14px;font-weight:700;color:var(--text-primary);">Transformer</div>
+        <div style="font-size:12px;color:var(--text-muted);">Self-Attention / BERT / GPT</div>
+        <ul style="font-size:12px;color:var(--text-secondary);margin-top:6px;padding-left:14px;">
+          <li>Vaswani et al. 2017</li>
+          <li>現代 AI 核心架構</li>
+        </ul>
+      </div>
+    </div>
+    <table class="cmp-table">
+      <thead>
+        <tr><th>架構</th><th>主要優勢</th><th>主要限制</th><th>適用任務</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>MLP</td><td>通用近似器</td><td>不考慮資料結構</td><td>表格資料</td></tr>
+        <tr><td>CNN</td><td>局部特徵、平移不變性</td><td>全局關係差</td><td>影像、音訊</td></tr>
+        <tr><td>RNN/LSTM</td><td>序列建模</td><td>無法平行、長距離依賴弱</td><td>短文字序列</td></tr>
+        <tr><td>Transformer</td><td>全域注意力、平行化</td><td>O(n²) 計算複雜度</td><td>文字、影像、多模態</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="slide-footer">
+    <span class="footer-source">來源：通識（DL 演進）</span>
+    <div class="footer-tags"><span class="tag tag-green">架構比較</span></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 16: Transformer 架構 -->
+<!-- ============================================================ -->
+<div class="slide" id="slide-16">
+  <div class="slide-header">
+    <div class="slide-chapter">Ch.4 Transformer 架構</div>
+    <div class="slide-title-zh">Transformer：Attention Is All You Need</div>
+    <div class="slide-title-en">Transformer Architecture (Vaswani et al., 2017)</div>
+  </div>
+  <div class="slide-body">
+    <div class="col">
+      <h3>核心貢獻</h3>
+      <p>Vaswani et al.（2017）提出 <strong>Transformer</strong>，完全捨棄 RNN 與 CNN，僅使用 <strong>Attention 機制</strong>建立序列模型，實現完全平行化訓練。</p>
+      <div class="highlight-box">
+        <strong>Encoder-Decoder 架構：</strong><br>
+        Encoder：N=6 層，每層包含 Multi-Head Self-Attention + Feed-Forward<br>
+        Decoder：N=6 層，額外加入 Cross-Attention（關注 Encoder 輸出）
+      </div>
+      <h3>Scaled Dot-Product Attention</h3>
+      <div class="formula-block">
+        $\text{Attention}(Q, K, V) = \text{softmax}\!\left(\frac{QK^T}{\sqrt{d_k}}\right)V$
+      </div>
+      <div class="highlight-box orange">
+        <strong>為何除以 $\sqrt{d_k}$？</strong>當 $d_k$ 很大時，點積值方差增大，使 Softmax 進入梯度極小的區域（梯度消失）。除以 $\sqrt{d_k}$ 使方差縮放回 1。（來源：[[source-vaswani-2017-attention]]）
+      </div>
+    </div>
+    <div class="vdivider"></div>
+    <div class="col">
+      <h3>Multi-Head Attention</h3>
+      <div class="formula-block">
+        $\text{MultiHead}(Q,K,V) = \text{Concat}(h_1,...,h_H)W^O$<br>
+        where $h_i = \text{Attention}(QW_i^Q, KW_i^K, VW_i^V)$
+      </div>
+      <ul>
+        <li>使用 h=8 個並行 Attention Heads</li>
+        <li>每個 Head：$d_k = d_v = d_{model}/h = 64$</li>
+        <li>不同 Head 學習不同子空間的依賴關係</li>
+      </ul>
+      <h3>Positional Encoding</h3>
+      <p>Transformer 無 RNN 的序列性，需加入位置資訊：</p>
+      <div class="formula-block">
+        $PE_{(pos,2i)} = \sin(pos / 10000^{2i/d_{model}})$<br>
+        $PE_{(pos,2i+1)} = \cos(pos / 10000^{2i/d_{model}})$
+      </div>
+      <div class="highlight-box en-only">
+        The Transformer replaces recurrence with self-attention, allowing all positions in a sequence to interact simultaneously. This enables parallelization unavailable in RNNs, dramatically reducing training time while achieving state-of-the-art results. (Source: Vaswani et al., 2017, NIPS)
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="footer-source">來源：[[source-vaswani-2017-attention]] | wiki/concepts/deep-learning/transformer-architecture.md</span>
+    <div class="footer-tags"><span class="tag tag-purple">Transformer</span><span class="tag tag-blue">NLP</span></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 17: Self-Attention 詳解 -->
+<!-- ============================================================ -->
+<div class="slide" id="slide-17">
+  <div class="slide-header">
+    <div class="slide-chapter">Ch.4 Transformer 架構</div>
+    <div class="slide-title-zh">Self-Attention 機制詳解</div>
+    <div class="slide-title-en">Self-Attention Mechanism in Depth</div>
+  </div>
+  <div class="slide-body">
+    <div class="col">
+      <h3>Query、Key、Value 的概念</h3>
+      <div class="info-card">
+        <div class="card-label">資訊檢索的類比</div>
+        <ul>
+          <li><strong>Query (Q)</strong>：你在問什麼？（查詢向量）</li>
+          <li><strong>Key (K)</strong>：每個位置的「標籤」（鍵向量）</li>
+          <li><strong>Value (V)</strong>：每個位置的實際內容（值向量）</li>
+        </ul>
+        <p style="margin-top:6px;font-size:12px;">透過 Q 與 K 計算相似度（Attention Score），決定從 V 中汲取多少資訊。</p>
+      </div>
+      <h3>計算步驟</h3>
+      <ol>
+        <li>線性投影：Q = XW^Q, K = XW^K, V = XW^V</li>
+        <li>計算 Attention Score：$S = QK^T / \sqrt{d_k}$</li>
+        <li>Softmax 正規化得到 Attention Weights</li>
+        <li>加權求和 V：Output = Attention Weights × V</li>
+      </ol>
+    </div>
+    <div class="vdivider"></div>
+    <div class="col">
+      <h3>與 Cross-Attention 的區別</h3>
+      <table class="cmp-table">
+        <thead><tr><th></th><th>Self-Attention</th><th>Cross-Attention</th></tr></thead>
+        <tbody>
+          <tr><td>Q 來源</td><td>輸入序列本身</td><td>Decoder 當前層</td></tr>
+          <tr><td>K, V 來源</td><td>輸入序列本身</td><td>Encoder 輸出</td></tr>
+          <tr><td>用途</td><td>序列內部依賴</td><td>序列間對齊</td></tr>
+          <tr><td>使用位置</td><td>Encoder &amp; Decoder</td><td>僅 Decoder</td></tr>
+        </tbody>
+      </table>
+      <h3>Masked Self-Attention（Decoder 中）</h3>
+      <div class="highlight-box orange">
+        Decoder 的 Self-Attention 採用<strong>因果遮罩（Causal Mask）</strong>：在計算 Attention Score 後，對「未來位置」設為 $-\infty$，使 Softmax 後這些位置的權重為 0。保證生成第 i 個詞時，只能關注位置 1 到 i-1。（來源：[[source-vaswani-2017-attention]]）
+      </div>
+      <h3>英文術語</h3>
+      <ul>
+        <li><strong>Attention Weight</strong>：注意力權重</li>
+        <li><strong>Causal Mask</strong>：因果遮罩</li>
+        <li><strong>Context Vector</strong>：上下文向量</li>
+      </ul>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="footer-source">來源：[[source-vaswani-2017-attention]] | wiki/concepts/deep-learning/self-attention.md</span>
+    <div class="footer-tags"><span class="tag tag-purple">Self-Attention</span></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 18: Transformer 訓練與模型變體 -->
+<!-- ============================================================ -->
+<div class="slide" id="slide-18">
+  <div class="slide-header">
+    <div class="slide-chapter">Ch.4 Transformer 架構</div>
+    <div class="slide-title-zh">Transformer 訓練與模型變體</div>
+    <div class="slide-title-en">Training Details &amp; Model Variants</div>
+  </div>
+  <div class="slide-body">
+    <div class="col">
+      <h3>原始 Transformer 訓練設定</h3>
+      <div class="info-card">
+        <div class="card-label">超參數（Vaswani et al., 2017）</div>
+        <ul>
+          <li>$d_{model} = 512$（模型維度）</li>
+          <li>$h = 8$（Multi-Head Attention 的 head 數）</li>
+          <li>$d_k = d_v = 64$（每個 head 的維度）</li>
+          <li>$d_{ff} = 2048$（Feed-Forward 內層維度）</li>
+          <li>N = 6（Encoder 和 Decoder 的層數）</li>
+          <li>優化器：Adam（β₁=0.9, β₂=0.98）</li>
+          <li>Warmup Steps = 4000</li>
+        </ul>
+      </div>
+      <div class="formula-block">
+        學習率排程：$lr = d_{model}^{-0.5} \cdot \min(step^{-0.5}, step \cdot warmup^{-1.5})$
+      </div>
+    </div>
+    <div class="vdivider"></div>
+    <div class="col">
+      <h3>主要 Transformer 變體</h3>
+      <table class="cmp-table">
+        <thead><tr><th>模型</th><th>架構</th><th>訓練目標</th><th>適合任務</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>BERT</strong></td>
+            <td>Encoder-only</td>
+            <td>Masked LM + NSP</td>
+            <td>文字理解、分類</td>
+          </tr>
+          <tr>
+            <td><strong>GPT 系列</strong></td>
+            <td>Decoder-only</td>
+            <td>Causal LM（預測下一個 Token）</td>
+            <td>文字生成</td>
+          </tr>
+          <tr>
+            <td><strong>T5</strong></td>
+            <td>Encoder-Decoder</td>
+            <td>Text-to-Text</td>
+            <td>翻譯、摘要</td>
+          </tr>
+          <tr>
+            <td><strong>ViT</strong></td>
+            <td>Encoder-only</td>
+            <td>圖像分類</td>
+            <td>影像理解</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="highlight-box green">
+        <strong>關鍵區別：</strong>Encoder-only 模型（如 BERT）適合「理解」類任務（NLU）；Decoder-only 模型（如 GPT）適合「生成」類任務（NLG）；Encoder-Decoder（如 T5）適合序列轉換任務。
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="footer-source">來源：[[source-vaswani-2017-attention]]、通識（Transformer 變體）</span>
+    <div class="footer-tags"><span class="tag tag-purple">Transformer</span><span class="tag tag-blue">BERT / GPT</span></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 19: Transformer vs RNN 比較 -->
+<!-- ============================================================ -->
+<div class="slide" id="slide-19">
+  <div class="slide-header">
+    <div class="slide-chapter">Ch.4 Transformer 架構</div>
+    <div class="slide-title-zh">Transformer vs RNN / LSTM 深度比較</div>
+    <div class="slide-title-en">Transformer vs RNN: A Detailed Comparison</div>
+  </div>
+  <div class="slide-body" style="display:block;padding:16px 36px;">
+    <table class="cmp-table" style="width:100%;">
+      <thead>
+        <tr><th>比較維度</th><th>RNN / LSTM</th><th>Transformer</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>處理方式</strong></td>
+          <td>序列式（左到右，step by step）</td>
+          <td>平行化（同時處理所有位置）</td>
+        </tr>
+        <tr>
+          <td><strong>長距離依賴</strong></td>
+          <td>困難（梯度消失問題）；LSTM 有改善但仍有限</td>
+          <td>直接連接任意兩個位置，路徑長度 O(1)</td>
+        </tr>
+        <tr>
+          <td><strong>訓練速度</strong></td>
+          <td>慢（無法平行化）</td>
+          <td>快（GPU 平行化充分利用）</td>
+        </tr>
+        <tr>
+          <td><strong>計算複雜度</strong></td>
+          <td>每層 O(n) 序列步驟</td>
+          <td>Self-Attention O(n²d)；n 大時計算量大</td>
+        </tr>
+        <tr>
+          <td><strong>記憶體需求</strong></td>
+          <td>O(1) 額外空間（儲存 hidden state）</td>
+          <td>O(n²) attention 矩陣</td>
+        </tr>
+        <tr>
+          <td><strong>位置資訊</strong></td>
+          <td>隱式（由序列順序決定）</td>
+          <td>需顯式 Positional Encoding</td>
+        </tr>
+        <tr>
+          <td><strong>代表模型</strong></td>
+          <td>LSTM, GRU, Bi-LSTM</td>
+          <td>BERT, GPT, T5, LLaMA</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="highlight-box" style="margin-top:12px;">
+      <strong>結論（Vaswani et al., 2017）：</strong>Transformer 在機器翻譯任務上，以遠低於 RNN 的訓練成本（12 小時 vs 數天）達到更高的 BLEU 分數，且 Self-Attention 的最大路徑長度為 O(1)，遠優於 RNN 的 O(n)。
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="footer-source">來源：[[source-vaswani-2017-attention]] | wiki/comparisons/rnn-vs-transformer.md</span>
+    <div class="footer-tags"><span class="tag tag-purple">比較</span></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 20: Positional Encoding 詳解 -->
+<!-- ============================================================ -->
+<div class="slide" id="slide-20">
+  <div class="slide-header">
+    <div class="slide-chapter">Ch.4 Transformer 架構</div>
+    <div class="slide-title-zh">位置編碼（Positional Encoding）</div>
+    <div class="slide-title-en">Positional Encoding</div>
+  </div>
+  <div class="slide-body">
+    <div class="col">
+      <h3>為何需要位置編碼？</h3>
+      <p>Transformer 的 Self-Attention 是<strong>排列不變（Permutation-Invariant）</strong>的：無論輸入序列的順序如何排列，注意力機制的輸出相同。因此必須人為注入位置資訊。</p>
+      <div class="highlight-box orange">
+        比較 RNN 與 Transformer 對位置資訊的處理方式：RNN 天然包含位置資訊（輸入順序決定 hidden state 更新順序）；Transformer 需要明確的 Positional Encoding。
+      </div>
+      <h3>Sinusoidal Positional Encoding</h3>
+      <div class="formula-block">
+        $PE_{(pos,2i)} = \sin\!\left(\frac{pos}{10000^{2i/d_{model}}}\right)$<br><br>
+        $PE_{(pos,2i+1)} = \cos\!\left(\frac{pos}{10000^{2i/d_{model}}}\right)$
+      </div>
+      <p>pos 是序列中的位置，i 是維度索引。每個維度對應不同頻率的正弦波。</p>
+    </div>
+    <div class="vdivider"></div>
+    <div class="col">
+      <h3>Sinusoidal vs Learned Embedding</h3>
+      <table class="cmp-table">
+        <thead><tr><th>特性</th><th>Sinusoidal</th><th>Learned Embedding</th></tr></thead>
+        <tbody>
+          <tr><td>訓練參數</td><td>無（固定函數）</td><td>有（可學習）</td></tr>
+          <tr><td>可外推長度</td><td>可外推（見過更長序列）</td><td>僅限訓練時的長度</td></tr>
+          <tr><td>效果</td><td>與 Learned 幾乎相同</td><td>與 Sinusoidal 幾乎相同</td></tr>
+        </tbody>
+      </table>
+      <div class="highlight-box green" style="margin-top:8px;">
+        原始論文選擇 Sinusoidal 的原因：可能允許模型外推至訓練時未見過的更長序列長度。（來源：[[source-vaswani-2017-attention]]）
+      </div>
+      <h3>現代改進</h3>
+      <div class="info-card">
+        <div class="card-label">RoPE（Rotary Position Embedding）</div>
+        <p>LLaMA、GPT-NeoX 等現代 LLM 使用旋轉位置編碼，在 Attention 計算中直接編碼相對位置，外推能力更強。</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="footer-source">來源：[[source-vaswani-2017-attention]] | wiki/concepts/deep-learning/positional-encoding.md</span>
+    <div class="footer-tags"><span class="tag tag-purple">Positional Encoding</span></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 21: 強化學習基礎 -->
+<!-- ============================================================ -->
+<div class="slide" id="slide-21">
+  <div class="slide-header">
+    <div class="slide-chapter">Ch.5 強化學習</div>
+    <div class="slide-title-zh">強化學習基礎概念</div>
+    <div class="slide-title-en">Reinforcement Learning Fundamentals</div>
+  </div>
+  <div class="slide-body">
+    <div class="col">
+      <h3>核心元素（MDP 五元組）</h3>
+      <div class="formula-block">
+        MDP = (S, A, P, R, γ)<br>
+        S：狀態空間（State Space）<br>
+        A：動作空間（Action Space）<br>
+        P：狀態轉移機率（Transition Probability）<br>
+        R：獎勵函數（Reward Function）<br>
+        γ：折扣因子（Discount Factor, 0 &lt; γ ≤ 1）
+      </div>
+      <div class="highlight-box">
+        <strong>直覺理解：</strong>代理人（Agent）在環境（Environment）中執行動作（Action），收到獎勵（Reward）並轉移至新狀態（State），目標是最大化長期累積獎勵。
+      </div>
+      <h3>折扣累積獎勵（Discounted Return）</h3>
+      <div class="formula-block">
+        $G_t = R_{t+1} + \gamma R_{t+2} + \gamma^2 R_{t+3} + ... = \sum_{k=0}^{\infty} \gamma^k R_{t+k+1}$
+      </div>
+    </div>
+    <div class="vdivider"></div>
+    <div class="col">
+      <h3>價值函數</h3>
+      <div class="info-card">
+        <div class="card-label">狀態價值函數 V(s)</div>
+        <p>在狀態 s 下，遵循策略 π 的期望累積獎勵：<br>$V^\pi(s) = \mathbb{E}_\pi[G_t | S_t = s]$</p>
+      </div>
+      <div class="info-card">
+        <div class="card-label">動作價值函數 Q(s,a)</div>
+        <p>在狀態 s 執行動作 a 後，遵循策略 π 的期望累積獎勵：<br>$Q^\pi(s,a) = \mathbb{E}_\pi[G_t | S_t=s, A_t=a]$</p>
+      </div>
+      <h3>Bellman 方程式</h3>
+      <div class="formula-block">
+        $V^\pi(s) = \sum_a \pi(a|s) \sum_{s'} P(s'|s,a)[R(s,a,s') + \gamma V^\pi(s')]$
+      </div>
+      <div class="highlight-box en-only">
+        In Reinforcement Learning, an agent interacts with an environment modeled as a Markov Decision Process (MDP). The agent observes states, takes actions, and receives rewards. The goal is to find an optimal policy π* that maximizes the expected discounted cumulative reward.
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="footer-source">來源：通識（強化學習）| wiki/concepts/reinforcement-learning/</span>
+    <div class="footer-tags"><span class="tag tag-orange">強化學習</span></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 22: Q-Learning -->
+<!-- ============================================================ -->
+<div class="slide" id="slide-22">
+  <div class="slide-header">
+    <div class="slide-chapter">Ch.5 強化學習</div>
+    <div class="slide-title-zh">Q-Learning 演算法</div>
+    <div class="slide-title-en">Q-Learning Algorithm</div>
+  </div>
+  <div class="slide-body">
+    <div class="col">
+      <h3>Q-Learning 概述</h3>
+      <p>Q-Learning 是一種<strong>無模型（Model-free）</strong>、<strong>離策略（Off-policy）</strong>的強化學習演算法，直接學習最優動作價值函數 Q*(s,a)，無需知道環境的轉移機率。</p>
+      <h3>Q 值更新規則</h3>
+      <div class="formula-block">
+        $Q(s, a) \leftarrow Q(s, a) + \alpha \left[ r + \gamma \max_{a'} Q(s', a') - Q(s, a) \right]$<br><br>
+        其中：<br>
+        α：學習率（Learning Rate）<br>
+        γ：折扣因子（Discount Factor）<br>
+        $r + \gamma \max_{a'} Q(s', a')$：TD Target（時差目標）<br>
+        $[\cdot]$：TD Error（時差誤差）
+      </div>
+      <div class="highlight-box">
+        <strong>Q-Table：</strong>對於小型離散狀態空間，Q(s,a) 以查表（Q-Table）儲存。狀態-動作空間大時，改用神經網路近似（DQN）。
+      </div>
+    </div>
+    <div class="vdivider"></div>
+    <div class="col">
+      <h3>Exploration vs Exploitation</h3>
+      <div class="info-card">
+        <div class="card-label">ε-greedy 策略</div>
+        <ul>
+          <li>以機率 ε 隨機探索（Exploration）</li>
+          <li>以機率 1-ε 選擇已知最優動作（Exploitation）</li>
+          <li>通常 ε 從高值逐漸衰減</li>
+        </ul>
+      </div>
+      <h3>Q-Learning 演算法流程</h3>
+      <ol>
+        <li>初始化 Q-Table（全為 0 或隨機）</li>
+        <li>觀察當前狀態 s</li>
+        <li>以 ε-greedy 選擇動作 a</li>
+        <li>執行動作，觀察 r 和下一狀態 s'</li>
+        <li>更新 Q(s, a)</li>
+        <li>設 s = s'，回到步驟 3</li>
+      </ol>
+      <h3>英文術語</h3>
+      <ul>
+        <li><strong>Temporal Difference (TD)</strong>：時間差分學習</li>
+        <li><strong>Greedy Policy</strong>：貪婪策略（選 Q 最大的動作）</li>
+        <li><strong>Convergence</strong>：在 α 滿足條件時 Q-Learning 保證收斂</li>
+      </ul>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="footer-source">來源：通識（Q-Learning）| wiki/concepts/reinforcement-learning/</span>
+    <div class="footer-tags"><span class="tag tag-orange">強化學習</span><span class="tag tag-blue">Q-Learning</span></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 23: DQN -->
+<!-- ============================================================ -->
+<div class="slide" id="slide-23">
+  <div class="slide-header">
+    <div class="slide-chapter">Ch.5 強化學習</div>
+    <div class="slide-title-zh">深度 Q 網路（DQN）</div>
+    <div class="slide-title-en">Deep Q-Network (DQN) — Mnih et al., 2013</div>
+  </div>
+  <div class="slide-body">
+    <div class="col">
+      <h3>動機：擴展 Q-Learning 到高維空間</h3>
+      <p>傳統 Q-Learning 需要 Q-Table，無法處理高維連續狀態空間（如 Atari 遊戲的像素輸入）。DQN 使用<strong>神經網路（CNN）</strong>近似 Q 函數：</p>
+      <div class="formula-block">
+        $Q(s, a; \theta) \approx Q^*(s, a)$
+      </div>
+      <h3>兩大核心技術</h3>
+      <div class="info-card">
+        <div class="card-label">1. Experience Replay（經驗回放）</div>
+        <ul>
+          <li>將每次互動的 (s, a, r, s') 存入 Replay Buffer</li>
+          <li>訓練時從 Buffer 隨機取樣 mini-batch</li>
+          <li><strong>目的 1</strong>：打破資料的時間相關性（IID 假設）</li>
+          <li><strong>目的 2</strong>：提高資料使用效率</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <div class="card-label">2. Target Network（目標網路）</div>
+        <ul>
+          <li>建立一份 Q-Network 的副本（Target Network）</li>
+          <li>TD Target 使用 Target Network 計算，每隔 C 步更新</li>
+          <li><strong>目的</strong>：穩定訓練目標，防止「追逐移動靶」的不穩定問題</li>
+        </ul>
+      </div>
+    </div>
+    <div class="vdivider"></div>
+    <div class="col">
+      <h3>DQN 損失函數</h3>
+      <div class="formula-block">
+        $L(\theta) = \mathbb{E}_{(s,a,r,s') \sim \mathcal{D}}\!\left[\left(r + \gamma \max_{a'} Q(s', a'; \theta^-) - Q(s, a; \theta)\right)^2\right]$<br><br>
+        θ：Q-Network 參數<br>
+        θ⁻：Target Network 參數（固定不更新）
+      </div>
+      <h3>英文技術定義</h3>
+      <div class="highlight-box en-only">
+        Deep Q-Network (DQN) extends Q-Learning by approximating the Q-function with a deep neural network. Two key innovations stabilize training: (1) Experience Replay stores transitions in a replay buffer and samples random mini-batches, breaking temporal correlations in training data; (2) the Target Network provides a temporally stable learning target by periodically copying the Q-network weights, preventing the "moving target" problem inherent in vanilla Q-Learning. (Mnih et al., 2013)
+      </div>
+      <h3>DQN 成就</h3>
+      <div class="highlight-box green">
+        DQN 在 49 款 Atari 遊戲中，以像素輸入達到人類水準或更高的效能。（來源：Mnih et al., 2013，arXiv:1312.5602）
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="footer-source">來源：Mnih et al. 2013 (DQN) | wiki/concepts/reinforcement-learning/dqn.md</span>
+    <div class="footer-tags"><span class="tag tag-orange">DQN</span><span class="tag tag-green">深度強化學習</span></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 24: Policy Gradient / PPO -->
+<!-- ============================================================ -->
+<div class="slide" id="slide-24">
+  <div class="slide-header">
+    <div class="slide-chapter">Ch.5 強化學習</div>
+    <div class="slide-title-zh">策略梯度與 Actor-Critic</div>
+    <div class="slide-title-en">Policy Gradient &amp; Actor-Critic Methods</div>
+  </div>
+  <div class="slide-body">
+    <div class="col">
+      <h3>Value-Based vs Policy-Based</h3>
+      <table class="cmp-table">
+        <thead><tr><th>方法</th><th>代表</th><th>特點</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Value-Based</td>
+            <td>Q-Learning, DQN</td>
+            <td>學習價值函數，間接得到策略；不易處理連續動作空間</td>
+          </tr>
+          <tr>
+            <td>Policy-Based</td>
+            <td>REINFORCE, PPO</td>
+            <td>直接學習策略；可處理連續動作；高變異數</td>
+          </tr>
+          <tr>
+            <td>Actor-Critic</td>
+            <td>A3C, PPO</td>
+            <td>結合兩者；Actor 學策略，Critic 評估價值</td>
+          </tr>
+        </tbody>
+      </table>
+      <h3>策略梯度定理</h3>
+      <div class="formula-block">
+        $\nabla_\theta J(\theta) = \mathbb{E}_{\pi_\theta}\left[\nabla_\theta \log \pi_\theta(a|s) \cdot Q^{\pi_\theta}(s, a)\right]$
+      </div>
+      <p>直接對策略參數 θ 求梯度，使期望累積獎勵最大化。</p>
+    </div>
+    <div class="vdivider"></div>
+    <div class="col">
+      <h3>PPO（Proximal Policy Optimization）</h3>
+      <p>OpenAI 提出的 Actor-Critic 演算法，現為 RLHF 訓練 LLM 的核心演算法。</p>
+      <div class="info-card">
+        <div class="card-label">PPO 的核心想法：Clipping</div>
+        <p>限制新舊策略的差距，防止策略更新步驟過大導致崩潰：</p>
+        <div class="code-block">
+          L<sup>CLIP</sup>(θ) = E[min(r(θ)Â, clip(r(θ), 1-ε, 1+ε)Â)]<br>
+          r(θ) = π_θ(a|s) / π_θ_old(a|s)
+        </div>
+      </div>
+      <h3>RLHF（強化學習從人類回饋）</h3>
+      <div class="highlight-box purple">
+        <strong>LLM 對齊三步驟：</strong><br>
+        1. 監督微調（SFT）：在人類示範資料上微調 LLM<br>
+        2. 訓練獎勵模型（Reward Model）：學習人類偏好<br>
+        3. PPO 優化：用 RM 分數指導 LLM 策略更新
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="footer-source">來源：通識（Policy Gradient、PPO、RLHF）</span>
+    <div class="footer-tags"><span class="tag tag-orange">PPO</span><span class="tag tag-purple">RLHF</span></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 25: RL 章節小結 -->
+<!-- ============================================================ -->
+<div class="slide" id="slide-25">
+  <div class="slide-header">
+    <div class="slide-chapter">Ch.5 強化學習</div>
+    <div class="slide-title-zh">強化學習演算法比較與應用</div>
+    <div class="slide-title-en">RL Algorithm Comparison &amp; Applications</div>
+  </div>
+  <div class="slide-body" style="display:block;padding:16px 36px;">
+    <table class="cmp-table" style="width:100%;margin-bottom:12px;">
+      <thead>
+        <tr><th>演算法</th><th>分類</th><th>策略類型</th><th>優點</th><th>缺點</th><th>代表應用</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Q-Learning</strong></td>
+          <td>Value-Based</td>
+          <td>Off-Policy</td>
+          <td>簡單、有理論保證</td>
+          <td>僅適合離散動作</td>
+          <td>小型遊戲、格子世界</td>
+        </tr>
+        <tr>
+          <td><strong>DQN</strong></td>
+          <td>Value-Based + DL</td>
+          <td>Off-Policy</td>
+          <td>處理高維輸入（像素）</td>
+          <td>僅離散動作</td>
+          <td>Atari 遊戲</td>
+        </tr>
+        <tr>
+          <td><strong>REINFORCE</strong></td>
+          <td>Policy-Based</td>
+          <td>On-Policy</td>
+          <td>可處理連續動作</td>
+          <td>高變異數、樣本效率低</td>
+          <td>教學用途</td>
+        </tr>
+        <tr>
+          <td><strong>Actor-Critic (A3C)</strong></td>
+          <td>Hybrid</td>
+          <td>On-Policy</td>
+          <td>低變異數、連續動作</td>
+          <td>實作複雜</td>
+          <td>機器人控制</td>
+        </tr>
+        <tr>
+          <td><strong>PPO</strong></td>
+          <td>Hybrid</td>
+          <td>On-Policy</td>
+          <td>穩定、樣本效率高</td>
+          <td>超參數敏感</td>
+          <td>LLM（RLHF）、ChatGPT</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="highlight-box purple">
+      <strong>強化學習在 LLM 中的應用（RLHF）：</strong>現代大型語言模型（如 GPT-4、Claude）的對齊訓練採用 RLHF（Reinforcement Learning from Human Feedback），其中使用 PPO 演算法根據人類偏好的獎勵模型優化語言模型的輸出策略。
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="footer-source">來源：通識（RL 比較）</span>
+    <div class="footer-tags"><span class="tag tag-orange">強化學習比較</span></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 26: LLM 基礎 -->
+<!-- ============================================================ -->
+<div class="slide" id="slide-26">
+  <div class="slide-header">
+    <div class="slide-chapter">Ch.6 大型語言模型</div>
+    <div class="slide-title-zh">大型語言模型基礎概念</div>
+    <div class="slide-title-en">Large Language Models: Fundamentals</div>
+  </div>
+  <div class="slide-body">
+    <div class="col">
+      <h3>什麼是 LLM？</h3>
+      <p>大型語言模型（Large Language Model，LLM）是以 Transformer Decoder 為基礎，在數兆個 Token 的文字資料上預訓練的語言模型。核心任務是<strong>預測下一個 Token</strong>（自迴歸生成）。</p>
+      <div class="highlight-box">
+        <strong>「進階詞語接龍」：</strong>LLM 在推論時，接收 Prompt，不斷預測並輸出下一個 Token，直到生成終止符（EOS）。
+      </div>
+      <h3>Token 與 Tokenization</h3>
+      <div class="info-card">
+        <div class="card-label">Token 的基本單位</div>
+        <ul>
+          <li>Token 不等於一個字，可能是字根、子詞（Subword）</li>
+          <li>常用 BPE（Byte Pair Encoding）進行切分</li>
+          <li>「Tokenization」是 AI 與人類之間的語言橋接</li>
+          <li>GPT-3 的 Context Window：4096 tokens</li>
+        </ul>
+      </div>
+      <h3>Embedding（嵌入向量）</h3>
+      <p>將 Token 映射至高維連續向量空間（$d_{model}$ 維），語義相近的 Token 在向量空間中距離較近。</p>
+    </div>
+    <div class="vdivider"></div>
+    <div class="col">
+      <h3>英文技術定義</h3>
+      <div class="highlight-box en-only">
+        A Large Language Model (LLM) is a Transformer-based neural network pretrained on massive text corpora using a self-supervised objective — predicting the next token given prior context (causal language modeling). At inference, the model autoregressively generates tokens one at a time, sampling from the predicted probability distribution over its vocabulary. Modern LLMs exhibit emergent capabilities such as in-context learning, chain-of-thought reasoning, and instruction following.
+      </div>
+      <h3>LLM 訓練三階段</h3>
+      <div class="info-card">
+        <div class="card-label">1. 預訓練（Pre-training）</div>
+        <p>在大規模無標記文字上，以預測下一個 Token 為目標的自監督學習。</p>
+      </div>
+      <div class="info-card">
+        <div class="card-label">2. 監督微調（SFT）</div>
+        <p>在人類撰寫的指令-回答對上微調，使模型學會遵循指令（Instruction Following）。</p>
+      </div>
+      <div class="info-card">
+        <div class="card-label">3. RLHF 對齊</div>
+        <p>使用 PPO 演算法根據人類偏好的獎勵模型，進一步優化模型輸出的有益性、無害性與誠實性。</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="footer-source">來源：通識（LLM）| wiki/concepts/llm-genai/</span>
+    <div class="footer-tags"><span class="tag tag-purple">LLM</span><span class="tag tag-blue">生成式 AI</span></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 27: GPT 架構與 In-Context Learning -->
+<!-- ============================================================ -->
+<div class="slide" id="slide-27">
+  <div class="slide-header">
+    <div class="slide-chapter">Ch.6 大型語言模型</div>
+    <div class="slide-title-zh">GPT 與情境學習</div>
+    <div class="slide-title-en">GPT &amp; In-Context Learning (ICL)</div>
+  </div>
+  <div class="slide-body">
+    <div class="col">
+      <h3>GPT 系列架構</h3>
+      <p>GPT（Generative Pre-trained Transformer）採用純 Transformer Decoder 架構，核心為<strong>因果語言建模（Causal Language Modeling）</strong>。</p>
+      <table class="cmp-table">
+        <thead><tr><th>模型</th><th>參數量</th><th>特點</th></tr></thead>
+        <tbody>
+          <tr><td>GPT-1</td><td>117M</td><td>首次大規模 LLM</td></tr>
+          <tr><td>GPT-2</td><td>1.5B</td><td>Few-shot 能力初現</td></tr>
+          <tr><td>GPT-3</td><td>175B</td><td>強大 ICL 能力</td></tr>
+          <tr><td>GPT-4</td><td>未公開</td><td>多模態、推理能力</td></tr>
+        </tbody>
+      </table>
+      <div class="highlight-box orange">
+        <strong>Scaling Law：</strong>Brown et al.（2020）發現，模型效能隨參數量、資料量、計算量的增加呈現可預測的冪次律提升——規模越大，效能越好。
+      </div>
+    </div>
+    <div class="vdivider"></div>
+    <div class="col">
+      <h3>情境學習（In-Context Learning, ICL）</h3>
+      <div class="info-card">
+        <div class="card-label">無需更新模型參數的「學習」</div>
+        <ul>
+          <li><strong>Zero-shot</strong>：只提供任務描述，不提供範例</li>
+          <li><strong>One-shot</strong>：提供 1 個範例</li>
+          <li><strong>Few-shot</strong>：提供少量範例（通常 &lt; 10 個）</li>
+        </ul>
+      </div>
+      <div class="highlight-box en-only">
+        In-context learning (ICL) refers to the ability of large language models to perform new tasks from examples provided in the prompt, without any gradient-based parameter updates. Brown et al. (2020) demonstrated that GPT-3 (175B parameters) achieves competitive performance on many NLP benchmarks using few-shot prompting alone, challenging the need for task-specific fine-tuning.
+      </div>
+      <h3>Prompt Engineering</h3>
+      <div class="info-card">
+        <div class="card-label">Chain-of-Thought（思維鏈）提示</div>
+        <p>在 Prompt 中加入逐步推理過程的範例，誘導模型展示中間推理步驟，大幅提升複雜推理任務的表現。</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="footer-source">來源：Brown et al. 2020 (GPT-3)、通識</span>
+    <div class="footer-tags"><span class="tag tag-purple">GPT</span><span class="tag tag-blue">In-Context Learning</span></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 28: RAG 與 AI Agent -->
+<!-- ============================================================ -->
+<div class="slide" id="slide-28">
+  <div class="slide-header">
+    <div class="slide-chapter">Ch.6 大型語言模型</div>
+    <div class="slide-title-zh">RAG 與 AI Agent</div>
+    <div class="slide-title-en">Retrieval-Augmented Generation &amp; AI Agents</div>
+  </div>
+  <div class="slide-body">
+    <div class="col">
+      <h3>RAG（檢索增強生成）</h3>
+      <p>LLM 的知識截止於訓練資料日期。RAG 通過在推論時動態檢索外部知識，解決知識更新和特定領域問題。</p>
+      <div class="info-card">
+        <div class="card-label">RAG 工作流程</div>
+        <ol>
+          <li>使用者提問（Query）</li>
+          <li>將 Query 轉為 Embedding 向量</li>
+          <li>在向量資料庫中檢索最相關的文件（Retrieval）</li>
+          <li>將檢索結果與 Query 合併為 Prompt</li>
+          <li>LLM 根據 Prompt 生成最終答案（Generation）</li>
+        </ol>
+      </div>
+      <div class="highlight-box orange">
+        <strong>RAG vs Fine-tuning：</strong>RAG 適合需要即時更新知識的場景（如問答系統）；Fine-tuning 適合改變模型行為風格或特定領域技能。
+      </div>
+    </div>
+    <div class="vdivider"></div>
+    <div class="col">
+      <h3>AI Agent</h3>
+      <div class="info-card">
+        <div class="card-label">Agent 的核心概念</div>
+        <p>AI Agent 是能夠<strong>感知環境、決策、執行動作</strong>，並透過工具（Tool）與外部世界互動的 LLM 應用架構。</p>
+      </div>
+      <div class="info-card">
+        <div class="card-label">ReAct（Reasoning + Acting）</div>
+        <p>Agent 交替執行「思考（Reasoning）」與「行動（Acting）」：<br>
+        Think &rarr; Act &rarr; Observe &rarr; Think &rarr; ...</p>
+      </div>
+      <h3>重要術語</h3>
+      <ul>
+        <li><strong>Vector Database</strong>：向量資料庫（儲存 Embedding）</li>
+        <li><strong>Semantic Search</strong>：語意搜尋</li>
+        <li><strong>Hallucination</strong>：幻覺（LLM 生成不正確但看似合理的內容）</li>
+        <li><strong>Context Window</strong>：上下文視窗長度</li>
+        <li><strong>Tool Use / Function Calling</strong>：工具呼叫</li>
+      </ul>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="footer-source">來源：通識（RAG、AI Agent）| wiki/concepts/llm-genai/</span>
+    <div class="footer-tags"><span class="tag tag-purple">RAG</span><span class="tag tag-blue">AI Agent</span></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 29: 生成式 AI 技術全景 -->
+<!-- ============================================================ -->
+<div class="slide" id="slide-29">
+  <div class="slide-header">
+    <div class="slide-chapter">Ch.6 大型語言模型</div>
+    <div class="slide-title-zh">生成式 AI 技術全景</div>
+    <div class="slide-title-en">Generative AI: Technology Landscape</div>
+  </div>
+  <div class="slide-body" style="display:block;padding:16px 36px;">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px;">
+      <div class="info-card">
+        <div class="card-label">文字生成</div>
+        <ul style="font-size:12px;">
+          <li>GPT-4、LLaMA 3、Claude 3</li>
+          <li>架構：Transformer Decoder-only</li>
+          <li>應用：聊天、摘要、翻譯、程式碼</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <div class="card-label">影像生成</div>
+        <ul style="font-size:12px;">
+          <li>DALL-E 3、Stable Diffusion、Midjourney</li>
+          <li>架構：Diffusion Model（擴散模型）</li>
+          <li>應用：文字轉影像（Text-to-Image）</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <div class="card-label">多模態</div>
+        <ul style="font-size:12px;">
+          <li>GPT-4V、Gemini、LLaVA</li>
+          <li>架構：Vision Encoder + LLM</li>
+          <li>應用：影像理解、VQA</li>
+        </ul>
+      </div>
+    </div>
+    <table class="cmp-table" style="width:100%;">
+      <thead>
+        <tr><th>概念</th><th>英文</th><th>說明</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>自迴歸生成</td><td>Autoregressive Generation</td><td>逐 Token 生成，每次以前文預測下一個</td></tr>
+        <tr><td>溫度參數</td><td>Temperature</td><td>控制生成隨機性；T→0 越確定，T→∞ 越隨機</td></tr>
+        <tr><td>Top-k / Top-p</td><td>Sampling Strategies</td><td>限制取樣範圍，平衡多樣性與品質</td></tr>
+        <tr><td>上下文視窗</td><td>Context Window</td><td>模型一次能處理的最大 Token 數</td></tr>
+        <tr><td>幻覺</td><td>Hallucination</td><td>LLM 生成看似合理但事實錯誤的內容</td></tr>
+        <tr><td>對齊</td><td>Alignment</td><td>使 LLM 輸出符合人類價值觀（有益、無害、誠實）</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="slide-footer">
+    <span class="footer-source">來源：通識（生成式 AI）</span>
+    <div class="footer-tags"><span class="tag tag-purple">生成式 AI</span></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 30: LLM 章節小結 -->
+<!-- ============================================================ -->
+<div class="slide" id="slide-30">
+  <div class="slide-header">
+    <div class="slide-chapter">Ch.6 大型語言模型</div>
+    <div class="slide-title-zh">LLM 關鍵術語速查</div>
+    <div class="slide-title-en">LLM Key Terminology Quick Reference</div>
+  </div>
+  <div class="slide-body" style="display:block;padding:16px 36px;">
+    <table class="cmp-table" style="width:100%;">
+      <thead>
+        <tr><th>英文術語</th><th>中文</th><th>簡要說明</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Large Language Model (LLM)</td><td>大型語言模型</td><td>大規模 Transformer Decoder 預訓練的語言模型</td></tr>
+        <tr><td>Token</td><td>語言單元</td><td>LLM 處理的最小單位，通常為子詞（Subword）</td></tr>
+        <tr><td>Embedding</td><td>嵌入向量</td><td>將離散符號映射到連續向量空間</td></tr>
+        <tr><td>Pre-training</td><td>預訓練</td><td>在大規模無標記資料上的自監督學習</td></tr>
+        <tr><td>Fine-tuning</td><td>微調</td><td>在小規模特定任務資料上繼續訓練</td></tr>
+        <tr><td>SFT (Supervised Fine-Tuning)</td><td>監督微調</td><td>RLHF 第一步，在人類示範資料上微調</td></tr>
+        <tr><td>RLHF</td><td>人類回饋強化學習</td><td>用人類偏好訓練 LLM 對齊</td></tr>
+        <tr><td>Prompt</td><td>提示</td><td>輸入給 LLM 的指令或上下文</td></tr>
+        <tr><td>RAG</td><td>檢索增強生成</td><td>結合外部知識庫提升 LLM 回答準確性</td></tr>
+        <tr><td>Hallucination</td><td>幻覺</td><td>LLM 生成錯誤但看似合理的內容</td></tr>
+        <tr><td>Context Window</td><td>上下文視窗</td><td>模型單次可處理的最大 Token 長度</td></tr>
+        <tr><td>Temperature</td><td>溫度</td><td>生成時的隨機性控制參數</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="slide-footer">
+    <span class="footer-source">來源：通識（LLM 術語）| wiki/concepts/llm-genai/</span>
+    <div class="footer-tags"><span class="tag tag-purple">LLM</span><span class="tag tag-blue">術語表</span></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 31: 重點比較 1 -->
+<!-- ============================================================ -->
+<div class="slide" id="slide-31">
+  <div class="slide-header">
+    <div class="slide-chapter">Ch.7 重點比較彙整</div>
+    <div class="slide-title-zh">監督式 vs 非監督式 vs 強化學習</div>
+    <div class="slide-title-en">Supervised vs Unsupervised vs Reinforcement Learning</div>
+  </div>
+  <div class="slide-body" style="display:block;padding:16px 36px;">
+    <table class="cmp-table" style="width:100%;">
+      <thead>
+        <tr><th>比較維度</th><th>監督式學習</th><th>非監督式學習</th><th>強化學習</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>訓練資料</strong></td>
+          <td>標記資料（輸入 + 標籤）</td>
+          <td>無標記資料（只有輸入）</td>
+          <td>與環境互動（獎勵信號）</td>
+        </tr>
+        <tr>
+          <td><strong>學習訊號</strong></td>
+          <td>預測誤差（Loss）</td>
+          <td>資料內在結構</td>
+          <td>累積獎勵（Return）</td>
+        </tr>
+        <tr>
+          <td><strong>目標</strong></td>
+          <td>預測 / 分類</td>
+          <td>發現結構 / 壓縮表示</td>
+          <td>最大化長期獎勵</td>
+        </tr>
+        <tr>
+          <td><strong>代表演算法</strong></td>
+          <td>KNN, SVM, NN, Transformer</td>
+          <td>K-Means, PCA, Autoencoder</td>
+          <td>Q-Learning, DQN, PPO</td>
+        </tr>
+        <tr>
+          <td><strong>典型應用</strong></td>
+          <td>影像分類、機器翻譯、垃圾郵件偵測</td>
+          <td>客戶分群、異常偵測、推薦系統</td>
+          <td>遊戲 AI、機器人、LLM 對齊（RLHF）</td>
+        </tr>
+        <tr>
+          <td><strong>主要挑戰</strong></td>
+          <td>標記成本高、過擬合</td>
+          <td>評估困難、無明確目標</td>
+          <td>稀疏獎勵、樣本效率低</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="highlight-box" style="margin-top:12px;">
+      <strong>現代趨勢（自監督學習）：</strong>LLM 採用自監督學習——以「預測下一個 Token」作為監督信號，從無標記資料中學習，結合了監督式學習的精確目標與非監督式學習對無標記資料的利用能力。
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="footer-source">來源：通識（ML 比較）</span>
+    <div class="footer-tags"><span class="tag tag-blue">比較</span></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 32: 重點比較 2 (KNN vs SVM vs DT) -->
+<!-- ============================================================ -->
+<div class="slide" id="slide-32">
+  <div class="slide-header">
+    <div class="slide-chapter">Ch.7 重點比較彙整</div>
+    <div class="slide-title-zh">KNN vs SVM vs Decision Tree 深度比較</div>
+    <div class="slide-title-en">KNN vs SVM vs Decision Tree</div>
+  </div>
+  <div class="slide-body" style="display:block;padding:16px 36px;">
+    <table class="cmp-table" style="width:100%;">
+      <thead>
+        <tr><th>比較維度</th><th>KNN</th><th>SVM</th><th>Decision Tree</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>模型類型</strong></td><td>非參數、懶學習</td><td>參數模型</td><td>非參數</td></tr>
+        <tr><td><strong>訓練階段</strong></td><td>無（Lazy Learner）</td><td>有（找支援向量）</td><td>有（建樹）</td></tr>
+        <tr><td><strong>推論複雜度</strong></td><td>O(nd)（慢）</td><td>O(n_sv × d)（快）</td><td>O(深度)（很快）</td></tr>
+        <tr><td><strong>決策邊界</strong></td><td>非線性（局部自適應）</td><td>線性 / 核函數非線性</td><td>軸對齊分割（非線性）</td></tr>
+        <tr><td><strong>對雜訊的敏感性</strong></td><td>高（K=1 時）</td><td>低（Soft Margin）</td><td>高（易過擬合）</td></tr>
+        <tr><td><strong>可解釋性</strong></td><td>中（找到 K 個鄰居）</td><td>低（黑盒）</td><td>高（可視化規則樹）</td></tr>
+        <tr><td><strong>高維資料</strong></td><td>差（維度詛咒）</td><td>好（Kernel Trick）</td><td>差（特徵過多）</td></tr>
+        <tr><td><strong>大規模資料</strong></td><td>差（儲存所有資料）</td><td>中（SV 數量）</td><td>好</td></tr>
+        <tr><td><strong>主要超參數</strong></td><td>K 值、距離函數</td><td>C、Kernel、γ</td><td>max_depth、min_samples</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="slide-footer">
+    <span class="footer-source">來源：通識（ML 演算法比較）</span>
+    <div class="footer-tags"><span class="tag tag-blue">比較</span></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 33: 重點比較 3 (RAG vs Fine-tuning) -->
+<!-- ============================================================ -->
+<div class="slide" id="slide-33">
+  <div class="slide-header">
+    <div class="slide-chapter">Ch.7 重點比較彙整</div>
+    <div class="slide-title-zh">RAG vs Fine-tuning vs Prompt Engineering</div>
+    <div class="slide-title-en">RAG vs Fine-tuning vs Prompt Engineering</div>
+  </div>
+  <div class="slide-body" style="display:block;padding:16px 36px;">
+    <table class="cmp-table" style="width:100%;margin-bottom:12px;">
+      <thead>
+        <tr><th>維度</th><th>Prompt Engineering</th><th>RAG</th><th>Fine-tuning</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>模型參數</strong></td><td>不更新</td><td>不更新</td><td>更新</td></tr>
+        <tr><td><strong>知識來源</strong></td><td>Prompt 中的情境</td><td>即時檢索外部文件</td><td>編入模型參數</td></tr>
+        <tr><td><strong>知識更新</strong></td><td>隨 Prompt 即時更新</td><td>更新知識庫即可</td><td>需重新訓練</td></tr>
+        <tr><td><strong>成本</strong></td><td>極低</td><td>低（向量資料庫）</td><td>高（GPU 訓練）</td></tr>
+        <tr><td><strong>適合場景</strong></td><td>通用任務調整</td><td>企業知識庫、FAQ</td><td>特定風格 / 技能</td></tr>
+        <tr><td><strong>主要風險</strong></td><td>Prompt 注入攻擊</td><td>檢索品質不穩</td><td>Catastrophic Forgetting</td></tr>
+      </tbody>
+    </table>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div class="highlight-box">
+        <strong>何時用 RAG？</strong>知識需要即時更新、來源需要可追溯、防止幻覺需要事實依據時，優先考慮 RAG。
+      </div>
+      <div class="highlight-box orange">
+        <strong>何時用 Fine-tuning？</strong>需要改變模型的輸出風格、學習特定格式、或特定領域能力（如醫療診斷）時，使用 Fine-tuning。
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="footer-source">來源：通識（RAG vs Fine-tuning）</span>
+    <div class="footer-tags"><span class="tag tag-purple">比較</span></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 34: 英文考題示範 1 (Transformer) -->
+<!-- ============================================================ -->
+<div class="slide" id="slide-34">
+  <div class="slide-header">
+    <div class="slide-chapter">Ch.8 英文考題解題示範</div>
+    <div class="slide-title-zh">考題示範：Transformer Self-Attention</div>
+    <div class="slide-title-en">Exam Practice: Transformer &amp; Self-Attention</div>
+  </div>
+  <div class="slide-body">
+    <div class="col col-wide">
+      <h3>原題（English）</h3>
+      <div class="highlight-box" style="background:rgba(240,136,62,0.06);border-color:rgba(240,136,62,0.25);">
+        <strong>Question:</strong> Explain the Self-Attention mechanism in the Transformer model. (1) Write the formula for Scaled Dot-Product Attention. (2) Why do we divide by $\sqrt{d_k}$? (3) What is the advantage of Transformer over RNN in handling long sequences?
+      </div>
+      <h3>中文翻譯</h3>
+      <div class="info-card">
+        <div class="card-label">題目翻譯</div>
+        <p>請解釋 Transformer 模型中的 Self-Attention 機制。(1) 寫出 Scaled Dot-Product Attention 的計算公式。(2) 為什麼要除以 $\sqrt{d_k}$？(3) Transformer 在處理長序列時相較 RNN 有何優勢？</p>
+      </div>
+      <h3>關鍵字</h3>
+      <div>
+        <span class="tag tag-purple">Self-Attention</span>
+        <span class="tag tag-blue">Query / Key / Value</span>
+        <span class="tag tag-green">Scaled Dot-Product</span>
+        <span class="tag tag-orange">Long-range Dependency</span>
+      </div>
+    </div>
+    <div class="vdivider"></div>
+    <div class="col">
+      <h3>參考答案</h3>
+      <p><strong>(1) 公式：</strong></p>
+      <div class="formula-block">
+        $\text{Attention}(Q,K,V) = \text{softmax}\!\left(\frac{QK^T}{\sqrt{d_k}}\right)V$
+      </div>
+      <p><strong>(2) 除以 $\sqrt{d_k}$ 的原因：</strong></p>
+      <ul>
+        <li>當 $d_k$ 大時，Q 與 K 的點積值方差增大（方差為 $d_k$）</li>
+        <li>Softmax 在絕對值大的輸入下梯度極小（饋和），導致梯度消失</li>
+        <li>除以 $\sqrt{d_k}$ 使點積方差縮回 1，保持梯度穩定</li>
+      </ul>
+      <p><strong>(3) Transformer vs RNN 長序列優勢：</strong></p>
+      <ul>
+        <li>RNN 需 O(n) 步才能連接序列兩端，長距離依賴困難</li>
+        <li>Self-Attention 任意兩位置直接計算（O(1) 路徑長度）</li>
+        <li>Transformer 可完全平行化，訓練速度遠快於 RNN</li>
+      </ul>
+      <div style="font-size:11px;color:var(--text-muted);margin-top:6px;">（來源：[[source-vaswani-2017-attention]]）</div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="footer-source">自編練習題 | 依據 wiki/concepts/deep-learning/transformer-architecture.md</span>
+    <div class="footer-tags"><span class="tag tag-orange">練習題</span></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 35: 英文考題示範 2 (DQN) -->
+<!-- ============================================================ -->
+<div class="slide" id="slide-35">
+  <div class="slide-header">
+    <div class="slide-chapter">Ch.8 英文考題解題示範</div>
+    <div class="slide-title-zh">考題示範：DQN 核心技術</div>
+    <div class="slide-title-en">Exam Practice: Deep Q-Network (DQN)</div>
+  </div>
+  <div class="slide-body">
+    <div class="col col-wide">
+      <h3>原題（English）</h3>
+      <div class="highlight-box" style="background:rgba(240,136,62,0.06);border-color:rgba(240,136,62,0.25);">
+        <strong>Question:</strong> In the Deep Q-Network (DQN) algorithm, two key techniques are introduced to stabilize training. (1) Explain the purpose of <em>Experience Replay</em>. (2) Explain the purpose of the <em>Target Network</em>. (3) Write the DQN loss function.
+      </div>
+      <h3>中文翻譯</h3>
+      <div class="info-card">
+        <div class="card-label">題目翻譯</div>
+        <p>在 DQN 演算法中，引入了兩項關鍵技術來穩定訓練。(1) 解釋 Experience Replay（經驗回放）的用途。(2) 解釋 Target Network（目標網路）的用途。(3) 寫出 DQN 的損失函數。</p>
+      </div>
+      <h3>關鍵字</h3>
+      <div>
+        <span class="tag tag-orange">DQN</span>
+        <span class="tag tag-blue">Experience Replay</span>
+        <span class="tag tag-green">Target Network</span>
+        <span class="tag tag-purple">TD Error</span>
+      </div>
+    </div>
+    <div class="vdivider"></div>
+    <div class="col">
+      <h3>參考答案</h3>
+      <p><strong>(1) Experience Replay（經驗回放）：</strong></p>
+      <ul>
+        <li>將互動紀錄 (s, a, r, s') 存入 Replay Buffer</li>
+        <li>訓練時隨機取樣，打破時間相關性，使資料近似 IID 分布</li>
+        <li>同一筆資料可被多次使用，提高樣本效率</li>
+      </ul>
+      <p><strong>(2) Target Network（目標網路）：</strong></p>
+      <ul>
+        <li>TD Target 以固定的 Target Network $\theta^-$ 計算，每隔 C 步更新</li>
+        <li>防止 Q-Network 追逐不斷移動的目標，穩定訓練過程</li>
+      </ul>
+      <p><strong>(3) DQN 損失函數：</strong></p>
+      <div class="formula-block">
+        $L(\theta) = \mathbb{E}\!\left[\left(r + \gamma \max_{a'} Q(s',a';\theta^-) - Q(s,a;\theta)\right)^2\right]$
+      </div>
+      <div style="font-size:11px;color:var(--text-muted);margin-top:6px;">（來源：Mnih et al., 2013，arXiv:1312.5602）</div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="footer-source">自編練習題 | 依據 wiki/concepts/reinforcement-learning/dqn.md</span>
+    <div class="footer-tags"><span class="tag tag-orange">練習題</span></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 36: 英文考題示範 3 (SVM/KNN) -->
+<!-- ============================================================ -->
+<div class="slide" id="slide-36">
+  <div class="slide-header">
+    <div class="slide-chapter">Ch.8 英文考題解題示範</div>
+    <div class="slide-title-zh">考題示範：傳統機器學習</div>
+    <div class="slide-title-en">Exam Practice: Traditional ML (SVM &amp; KNN)</div>
+  </div>
+  <div class="slide-body">
+    <div class="col">
+      <h3>考題一：SVM Kernel</h3>
+      <div class="highlight-box" style="background:rgba(240,136,62,0.06);border-color:rgba(240,136,62,0.25);">
+        <strong>Q:</strong> What is the "kernel trick" in SVM? Why is it useful for non-linearly separable data?
+      </div>
+      <div class="info-card">
+        <div class="card-label">中文翻譯與解答</div>
+        <p><strong>什麼是 SVM 的「核技巧」？對線性不可分資料有何用途？</strong></p>
+        <p><strong>答：</strong>核技巧（Kernel Trick）使用核函數 $K(x_i, x_j) = \phi(x_i)^\top \phi(x_j)$ 計算高維空間的內積，而無需明確計算映射 $\phi(\cdot)$。當資料在原始空間線性不可分時，核函數隱式地將資料映射到高維（甚至無限維）特徵空間，使其線性可分。</p>
+        <p><strong>常用核函數：</strong>RBF Kernel $K(x,z)=\exp(-\gamma||x-z||^2)$</p>
+      </div>
+    </div>
+    <div class="vdivider"></div>
+    <div class="col">
+      <h3>考題二：KNN 超參數</h3>
+      <div class="highlight-box" style="background:rgba(240,136,62,0.06);border-color:rgba(240,136,62,0.25);">
+        <strong>Q:</strong> In KNN, what happens when K=1 and K=N (N = total training samples)? How do you choose an appropriate K?
+      </div>
+      <div class="info-card">
+        <div class="card-label">中文翻譯與解答</div>
+        <p><strong>KNN 中 K=1 和 K=N 時各會發生什麼？如何選擇適當的 K？</strong></p>
+        <p><strong>K=1：</strong>完全以最近鄰的標籤決定，決策邊界過於不規則，訓練集準確率 100%，但嚴重過擬合（高變異數）。</p>
+        <p><strong>K=N：</strong>以所有訓練樣本的多數決，始終預測最常見類別，嚴重欠擬合（高偏差）。</p>
+        <p><strong>選擇方法：</strong>以交叉驗證（Cross-Validation）遍歷不同 K 值，選取驗證集誤差最小的 K。</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer">
+    <span class="footer-source">自編練習題 | 依據 wiki/concepts/ml-fundamentals/</span>
+    <div class="footer-tags"><span class="tag tag-orange">練習題</span></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SLIDE 37: 結語 -->
+<!-- ============================================================ -->
+<div class="slide" id="slide-37">
+  <div class="slide-cover">
+    <div class="cover-badge">AI Knowledge Wiki | 研究所計算機概論 AI 雙語知識庫</div>
+    <div class="cover-title" style="font-size:22px;margin-bottom:12px;">簡報結語</div>
+    <div class="cover-subtitle">本簡報涵蓋內容摘要</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:16px 0;text-align:left;">
+      <div class="info-card">
+        <div class="card-label">傳統機器學習</div>
+        <ul style="font-size:12px;padding-left:14px;">
+          <li>KNN、SVM、決策樹</li>
+          <li>線性 / 邏輯斯回歸</li>
+          <li>K-Means 分群</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <div class="card-label">深度學習 &amp; Transformer</div>
+        <ul style="font-size:12px;padding-left:14px;">
+          <li>神經網路與反向傳播</li>
+          <li>CNN、RNN、LSTM</li>
+          <li>Transformer (Vaswani 2017)</li>
+        </ul>
+      </div>
+      <div class="info-card">
+        <div class="card-label">強化學習 &amp; LLM</div>
+        <ul style="font-size:12px;padding-left:14px;">
+          <li>MDP、Q-Learning、DQN</li>
+          <li>PPO、RLHF</li>
+          <li>LLM、RAG、AI Agent</li>
+        </ul>
+      </div>
+    </div>
+    <div class="cover-meta">
+      所有內容以 AI Knowledge Wiki 知識庫為依據<br>
+      Wiki 位置：wiki/concepts/ | wiki/comparisons/ | wiki/sources/<br>
+      原始來源：Vaswani et al. 2017 | 通識知識 | 學術公開教材<br><br>
+      使用本簡報時，請搭配 Wiki 知識頁面深入研讀各概念。
+    </div>
+  </div>
+</div>
+
+    </div><!-- end slide-wrapper -->
+  </div><!-- end slide-viewport -->
+</div><!-- end app -->
+
+<!-- Navigation Bar -->
+<div id="navbar" role="navigation" aria-label="投影片導覽">
+  <button class="nav-btn" id="btn-prev" onclick="prevSlide()" aria-label="上一頁" disabled>
+    &#8592; 上一頁
+  </button>
+  <div id="progress-bar-wrap" role="progressbar" aria-valuemin="1" aria-valuenow="1">
+    <div id="progress-bar"></div>
+  </div>
+  <button class="nav-btn" id="btn-next" onclick="nextSlide()" aria-label="下一頁">
+    下一頁 &#8594;
+  </button>
+</div>
+
+<script>
+// ===== State =====
+const TOTAL_SLIDES = 38; // 0 to 37
+let currentSlide = 0;
+let currentLang = 'zh';
+
+// ===== Navigation =====
+function goToSlide(n) {
+  if (n < 0 || n >= TOTAL_SLIDES) return;
+  const prev = document.getElementById('slide-' + currentSlide);
+  if (prev) prev.classList.remove('active');
+  currentSlide = n;
+  const curr = document.getElementById('slide-' + currentSlide);
+  if (curr) curr.classList.add('active');
+  updateUI();
+}
+
+function nextSlide() {
+  if (currentSlide < TOTAL_SLIDES - 1) goToSlide(currentSlide + 1);
+}
+
+function prevSlide() {
+  if (currentSlide > 0) goToSlide(currentSlide - 1);
+}
+
+function updateUI() {
+  // Page counter
+  document.getElementById('page-counter').textContent = (currentSlide + 1) + ' / ' + TOTAL_SLIDES;
+  // Progress bar
+  const pct = ((currentSlide + 1) / TOTAL_SLIDES * 100).toFixed(1);
+  document.getElementById('progress-bar').style.width = pct + '%';
+  // ARIA
+  const pb = document.getElementById('progress-bar-wrap');
+  pb.setAttribute('aria-valuenow', currentSlide + 1);
+  pb.setAttribute('aria-valuemax', TOTAL_SLIDES);
+  // Buttons
+  document.getElementById('btn-prev').disabled = (currentSlide === 0);
+  document.getElementById('btn-next').disabled = (currentSlide === TOTAL_SLIDES - 1);
+  // Scroll to top of active slide body
+  const body = document.querySelector('.slide.active .slide-body');
+  if (body) body.scrollTop = 0;
+}
+
+// ===== Language Switch =====
+function setLang(lang) {
+  currentLang = lang;
+  document.documentElement.lang = lang === 'zh' ? 'zh-Hant-TW' : 'en';
+  document.getElementById('btn-zh').classList.toggle('active', lang === 'zh');
+  document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+  // Apply lang class to all slides
+  const slides = document.querySelectorAll('.slide');
+  slides.forEach(s => {
+    s.classList.toggle('lang-zh', lang === 'zh');
+    s.classList.toggle('lang-en', lang === 'en');
+  });
+}
+
+// ===== Keyboard Navigation =====
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') {
+    e.preventDefault();
+    nextSlide();
+  } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+    e.preventDefault();
+    prevSlide();
+  } else if (e.key === 'Home') {
+    goToSlide(0);
+  } else if (e.key === 'End') {
+    goToSlide(TOTAL_SLIDES - 1);
+  }
+});
+
+// ===== Init =====
+document.addEventListener('DOMContentLoaded', function() {
+  // Ensure slide 0 is active
+  const s0 = document.getElementById('slide-0');
+  if (s0) s0.classList.add('active');
+  setLang('zh');
+  updateUI();
+  // Re-render MathJax after page change
+  document.addEventListener('click', function() {
+    if (window.MathJax && window.MathJax.typeset) {
+      setTimeout(function() { window.MathJax.typeset(); }, 50);
+    }
+  });
+});
+
+// MathJax re-render on navigation
+const origGoToSlide = goToSlide;
+// Override already defined above, done
+</script>
+</body>
+</html>
